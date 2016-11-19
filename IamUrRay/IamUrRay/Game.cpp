@@ -194,19 +194,19 @@ void Game::GAME_Draw()
 	SDL_RenderClear(main_renderer);
 	SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
 
-	//GAME_drawLandscape();
-
-	player->Draw(main_renderer);
+	GAME_drawLandscape();
 
 	for (int i = 0; i < projectiles->size(); i++)
 	{
-
 		if (projectiles->at(i)->getActive())
 			projectiles->at(i)->Draw(main_renderer);
 		else
 			cout << "Not active!" << endl;
-
 	}
+
+	player->Draw(main_renderer);
+
+	
 	SDL_RenderPresent(main_renderer);
 	
 	
@@ -376,7 +376,6 @@ void Game::GAME_drawLandscape(){
 			nextType = textMap[i][j];
 			if (nextType==0){//empty tile
 				SDL_RenderCopy(main_renderer, emptyTexture, NULL,  allTiles[i * 26 + j]->rect);
-
 			}
 			else if (nextType == 1){//brick
 				SDL_RenderCopy(main_renderer, brickTexture, NULL,  allTiles[i * 26 + j]->rect);
@@ -399,16 +398,20 @@ void Game::GAME_drawLandscape(){
 			else if (nextType == 9){//skip
 				SDL_RenderCopy(main_renderer, base_4_Texture, NULL, allTiles[i * 26 + j]->rect);
 			}
-
-
 		}
-
-
 	}
+}
 
-
-
-
+void Game::checkCollisions()
+{
+	//check tile collisions with the tank
+	for (int i = 0; i < allTiles.size(); i++)
+	{
+		if (player->collides(allTiles.at(i)->rect))
+		{
+			
+		}
+	}
 }
 
 
