@@ -21,8 +21,17 @@ Tank::~Tank()
 
 void Tank::Update(const Uint8* keyboardState)
 {
-	x += x_speed;
-	y += y_speed;
+	if (!cur_direction_collision)
+	{
+		x += x_speed;
+		y += y_speed;
+	}
+	else
+	{
+		cur_direction_collision = false;
+		x -= x_speed;
+		y -= y_speed;
+	}
 
 	x_speed = 0;
 	y_speed = 0;
@@ -51,7 +60,7 @@ void Tank::Update(const Uint8* keyboardState)
 	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
 	{
 		shot = true;
-		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2), drawRect->y + (drawRect->h / 2)));
+		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2), drawRect->y + (drawRect->h / 2), Constants::Friendly));
 	}
 	else if (!keyboardState[SDL_SCANCODE_SPACE])
 		shot = false;
@@ -106,3 +115,12 @@ void Tank::initTank()
 
 	direction = Constants::Down;
 }
+
+bool Tank::collides(SDL_Rect* rectangle)
+{
+	bool collides = false;
+
+
+	return collides;
+}
+

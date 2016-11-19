@@ -24,10 +24,9 @@ private:
 	vector<Projectile*>* projectiles;
 
 	//constants
-	float speedMax = 0.5;
+	float speedMax = 0.1;
 
-
-
+	bool cur_direction_collision = false;
 	bool shot = false;
 
 public:
@@ -36,6 +35,6 @@ public:
 	void Update(const Uint8* keyboardState);
 	void Draw(SDL_Renderer* main_renderer);
 	void initTank();
+	bool collides(SDL_Rect* rectangle);
 };
-
 #endif

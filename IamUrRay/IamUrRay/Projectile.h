@@ -11,14 +11,14 @@ private:
 	SDL_Texture* texture;
 	SDL_Rect* drawRect;
 	
-
+	Constants::ProjectileOwner owner;
 	bool active;
 
 	int speedx;
 	int speedy;
 public:
 
-	Projectile(SDL_Texture* texture, Constants::Direction dir, int x, int y);
+	Projectile(SDL_Texture* texture, Constants::Direction dir, int x, int y, Constants::ProjectileOwner owner);
 
 	~Projectile();
 	void Update();

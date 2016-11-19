@@ -4,14 +4,13 @@
 
 #include <iostream>
 using namespace std;
-Projectile::Projectile(SDL_Texture* texture, Constants::Direction dir, int x, int y)
-
+Projectile::Projectile(SDL_Texture* texture, Constants::Direction dir, int x, int y, Constants::ProjectileOwner owner)
 {
 	this->texture = texture;
 	active = true;
+	this->owner = owner;
+
 	drawRect = new SDL_Rect();
-
-
 	drawRect->x = x;
 	drawRect->y = y;
 

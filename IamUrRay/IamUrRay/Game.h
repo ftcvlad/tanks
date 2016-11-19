@@ -7,9 +7,6 @@
 #include "Tile2.h"
 #include "Tank.h"
 #include "Projectile.h"
-
-
-
 #include <vector>
 
 class Game
@@ -32,12 +29,8 @@ private:
 	SDL_Texture* base_4_Texture = NULL;
 
 	std::vector<Tile2*> allTiles;
-	
 
 	SDL_Texture* bg_texture = NULL;
-
-
-
 
 	SDL_Rect* bg_rect;
 
@@ -46,11 +39,7 @@ private:
 	SDL_Texture* projectileTexture;
 	std::vector<Projectile*>* projectiles;
 
-
 	int textMap[26][26];
-
-
-
 
 	bool gameOver;
 	bool GAME_Init();
@@ -63,8 +52,7 @@ private:
 
 	bool initPlayer();
 
-
-
+	void checkCollisions();
 public:
 	int SCREEN_WIDTH;
 	int SCREEN_HEIGHT;
