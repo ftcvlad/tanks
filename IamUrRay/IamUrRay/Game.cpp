@@ -194,7 +194,7 @@ void Game::GAME_Draw()
 	SDL_RenderClear(main_renderer);
 	SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
 
-	//GAME_drawLandscape();
+	GAME_drawLandscape();
 
 	player->Draw(main_renderer);
 
@@ -263,20 +263,6 @@ bool Game::GAME_initializeMap(){
 
 	}
 
-	//load empty tile
-	temp = SDL_LoadBMP("graphics/empty2.bmp");
-	if (temp == NULL)
-	{
-		cout << "Couldn't load empty tile texture! Error: \n" << SDL_GetError() << endl;
-		return false;
-	}
-	emptyTexture = SDL_CreateTextureFromSurface(main_renderer, temp);
-	SDL_FreeSurface(temp);
-	if (emptyTexture == NULL)
-	{
-		cout << "Couldn't load background4! Error: \n" << SDL_GetError() << endl;
-
-	}
 
 	//load base 1 texture
 	temp = SDL_LoadBMP("graphics/base_1.bmp");
@@ -355,7 +341,13 @@ bool Game::GAME_initializeMap(){
 			nextRect->w =  32;
 			nextRect->h = 32;
 
-			allTiles.push_back(new Tile2(nextRect));
+			if (textMap[row][c]==2){//grass
+				allTiles.push_back(new Tile2(nextRect, true));
+			}
+			else {//other
+				allTiles.push_back(new Tile2(nextRect, false));
+			}
+			
 		}
 		row++;
 		
@@ -375,7 +367,7 @@ void Game::GAME_drawLandscape(){
 		for (int j = 0; j < arrSize; j++){
 			nextType = textMap[i][j];
 			if (nextType==0){//empty tile
-				SDL_RenderCopy(main_renderer, emptyTexture, NULL,  allTiles[i * 26 + j]->rect);
+				
 
 			}
 			else if (nextType == 1){//brick

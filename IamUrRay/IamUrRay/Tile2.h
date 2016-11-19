@@ -6,10 +6,11 @@
 class Tile2
 {
 public:
-	Tile2(SDL_Rect* rec);
+	Tile2(SDL_Rect* rec, bool canIntersect);
 	~Tile2();
 
 	SDL_Rect* rect;
+	bool canIntersect;
 };
 
 

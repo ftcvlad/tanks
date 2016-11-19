@@ -26,7 +26,6 @@ private:
 	SDL_Texture* brickTexture = NULL;
 	SDL_Texture* grassTexture = NULL;
 	SDL_Texture* wallTexture = NULL;
-	SDL_Texture* emptyTexture = NULL;
 	SDL_Texture* base_1_Texture = NULL;
 	SDL_Texture* base_2_Texture = NULL;
 	SDL_Texture* base_3_Texture = NULL;
