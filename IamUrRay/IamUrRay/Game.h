@@ -4,8 +4,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-
-#include "Player.h"
 #include "Tile2.h"
 #include "Tank.h"
 #include "Projectile.h"
@@ -25,14 +23,14 @@ private:
 
 
 	//SDL_Surface* bg_texture = NULL;
-	SDL_Surface* brickTexture = NULL;
-	SDL_Surface* grassTexture = NULL;
-	SDL_Surface* wallTexture = NULL;
-	SDL_Surface* emptyTexture = NULL;
-	SDL_Surface* base_1_Texture = NULL;
-	SDL_Surface* base_2_Texture = NULL;
-	SDL_Surface* base_3_Texture = NULL;
-	SDL_Surface* base_4_Texture = NULL;
+	SDL_Texture* brickTexture = NULL;
+	SDL_Texture* grassTexture = NULL;
+	SDL_Texture* wallTexture = NULL;
+	SDL_Texture* emptyTexture = NULL;
+	SDL_Texture* base_1_Texture = NULL;
+	SDL_Texture* base_2_Texture = NULL;
+	SDL_Texture* base_3_Texture = NULL;
+	SDL_Texture* base_4_Texture = NULL;
 
 	std::vector<Tile2*> allTiles;
 	
@@ -61,7 +59,7 @@ private:
 	void GAME_Update();
 	void GAME_Draw();
 
-	void GAME_initializeMap();
+	bool GAME_initializeMap();
 	void GAME_drawLandscape();
 
 	bool initPlayer();

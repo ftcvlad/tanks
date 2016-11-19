@@ -4,7 +4,6 @@
 Tile2::Tile2(SDL_Rect* rec)
 {
 	rect = rec;
-
 }
 
 

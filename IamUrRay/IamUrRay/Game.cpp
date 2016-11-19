@@ -186,89 +186,155 @@ void Game::GAME_Update()
 
 
 	removeInactiveObjects();
-
+	cout << "Projectiles: " << projectiles->size() << endl;
 }
 
 void Game::GAME_Draw()
 {
+	SDL_RenderClear(main_renderer);
+	SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
 
-	GAME_drawLandscape();
-	/*SDL_BlitScaled(bg_texture, NULL, buffer, bg_rect);
-	player->Draw(buffer);
-	SDL_UpdateWindowSurface(main_window);*/
+	//GAME_drawLandscape();
+
+	player->Draw(main_renderer);
+
+	for (int i = 0; i < projectiles->size(); i++)
+	{
+
+		if (projectiles->at(i)->getActive())
+			projectiles->at(i)->Draw(main_renderer);
+		else
+			cout << "Not active!" << endl;
+
+	}
+	SDL_RenderPresent(main_renderer);
+	
+	
 }
 
 
-void Game::GAME_initializeMap(){
+bool Game::GAME_initializeMap(){
 
 
 	//load textures
-
+	bool success = true;
+	//load brick
 	SDL_Surface* temp = SDL_LoadBMP("graphics/brickWall2.bmp");
-	brickTexture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load brick texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	brickTexture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (brickTexture == NULL)
 	{
-		cout << "Couldn't load background1! Error: \n" << SDL_GetError() << endl;
-
+		cout << "Couldn't parse brick texture from surface! Error: \n" << SDL_GetError() << endl;
+		return false;
 	}
 
+	//load bush
 	temp = SDL_LoadBMP("graphics/bush2.bmp");
-	grassTexture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load bush texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	grassTexture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (grassTexture == NULL)
 	{
-		cout << "Couldn't load background2! Error: \n" << SDL_GetError() << endl;
-
+		cout << "Couldn't parse bush texture from surface! Error: \n" << SDL_GetError() << endl;
+		return false;
 	}
 
+	//load halfSteelWall
 	temp = SDL_LoadBMP("graphics/halfSteelWall2.bmp");
-	wallTexture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load steel wall texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	wallTexture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (wallTexture == NULL)
 	{
-		cout << "Couldn't load background3! Error: \n" << SDL_GetError() << endl;
+		cout << "Couldn't parse wall texture from file! Error: \n" << SDL_GetError() << endl;
 
 	}
 
+	//load empty tile
 	temp = SDL_LoadBMP("graphics/empty2.bmp");
-	emptyTexture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load empty tile texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	emptyTexture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (emptyTexture == NULL)
 	{
 		cout << "Couldn't load background4! Error: \n" << SDL_GetError() << endl;
 
 	}
+
+	//load base 1 texture
 	temp = SDL_LoadBMP("graphics/base_1.bmp");
-	base_1_Texture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load base 1 texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	base_1_Texture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (base_1_Texture == NULL)
 	{
-		cout << "Couldn't load background4! Error: \n" << SDL_GetError() << endl;
+		cout << "Couldn't parse base 1 texture! Error: \n" << SDL_GetError() << endl;
 
 	}
+
+	//load base 2 texture
 	temp = SDL_LoadBMP("graphics/base_2.bmp");
-	base_2_Texture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load base 2 texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	base_2_Texture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (base_2_Texture == NULL)
 	{
-		cout << "Couldn't load background4! Error: \n" << SDL_GetError() << endl;
+		cout << "Couldn't parse background4! Error: \n" << SDL_GetError() << endl;
 
 	}
+
+	//load base 3 texture
 	temp = SDL_LoadBMP("graphics/base_3.bmp");
-	base_3_Texture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load base 3 texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	base_3_Texture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (base_3_Texture == NULL)
 	{
-		cout << "Couldn't load background4! Error: \n" << SDL_GetError() << endl;
+		cout << "Couldn't parse background4 texture! Error: \n" << SDL_GetError() << endl;
 
 	}
+
+	//load base 4 texture
 	temp = SDL_LoadBMP("graphics/base_4.bmp");
-	base_4_Texture = SDL_ConvertSurface(temp, buffer->format, NULL);
+	if (temp == NULL)
+	{
+		cout << "Couldn't load base 4 texture! Error: \n" << SDL_GetError() << endl;
+		return false;
+	}
+	base_4_Texture = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 	if (base_4_Texture == NULL)
 	{
-		cout << "Couldn't load background4! Error: \n" << SDL_GetError() << endl;
+		cout << "Couldn't parse background4 texture! Error: \n" << SDL_GetError() << endl;
 
 	}
 
@@ -309,29 +375,29 @@ void Game::GAME_drawLandscape(){
 		for (int j = 0; j < arrSize; j++){
 			nextType = textMap[i][j];
 			if (nextType==0){//empty tile
-				SDL_BlitScaled(emptyTexture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, emptyTexture, NULL,  allTiles[i * 26 + j]->rect);
 
 			}
 			else if (nextType == 1){//brick
-				SDL_BlitScaled(brickTexture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, brickTexture, NULL,  allTiles[i * 26 + j]->rect);
 			}
 			else if (nextType == 2){//grass
-				SDL_BlitScaled(grassTexture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, brickTexture, NULL, allTiles[i * 26 + j]->rect);
 			}
 			else if (nextType == 3){//wall
-				SDL_BlitScaled(wallTexture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, wallTexture, NULL, allTiles[i * 26 + j]->rect);
 			}
 			else if (nextType == 6){//top left
-				SDL_BlitScaled(base_1_Texture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, base_1_Texture, NULL, allTiles[i * 26 + j]->rect);
 			}
 			else if (nextType == 7){//top right
-				SDL_BlitScaled(base_2_Texture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, base_2_Texture, NULL, allTiles[i * 26 + j]->rect);
 			}
 			else if (nextType == 8){//bottom left
-				SDL_BlitScaled(base_3_Texture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, base_3_Texture, NULL, allTiles[i * 26 + j]->rect);
 			}
 			else if (nextType == 9){//skip
-				SDL_BlitScaled(base_4_Texture, NULL, buffer, allTiles[i * 26 + j]->rect);
+				SDL_RenderCopy(main_renderer, base_4_Texture, NULL, allTiles[i * 26 + j]->rect);
 			}
 
 
@@ -340,25 +406,9 @@ void Game::GAME_drawLandscape(){
 
 	}
 
-	SDL_UpdateWindowSurface(main_window);
 
 
 
-	SDL_RenderClear(main_renderer);
-	
-	SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
-	player->Draw(main_renderer);
-
-	for (int i = 0; i < projectiles->size(); i++)
-	{
-
-		if (projectiles->at(i)->getActive())
-			projectiles->at(i)->Draw(main_renderer);
-		else
-			cout << "Not active!" << endl;
-
-	}
-	SDL_RenderPresent(main_renderer);
 }
 
 

@@ -38,7 +38,7 @@ Projectile::Projectile(SDL_Texture* texture, Constants::Direction dir, int x, in
 
 Projectile::~Projectile()
 {
-	SDL_DestroyTexture(texture);
+	//SDL_DestroyTexture(texture);
 	delete drawRect;
 }
 
