@@ -25,6 +25,11 @@ private:
 
 	//constants
 	float speedMax = 0.5;
+
+
+
+	bool shot = false;
+
 public:
 	Tank(SDL_Texture* texture, SDL_Texture* projectile_texture, vector<Projectile*>* peojectiles);
 	~Tank();

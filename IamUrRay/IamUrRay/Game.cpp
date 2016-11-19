@@ -1,8 +1,10 @@
 #include "Game.h"
 #include "MAP_CONSTANTS.h"
 #include <iostream>
+
 #include <fstream>
 #include <string>
+
 
 using namespace std;
 
@@ -28,12 +30,11 @@ Game::Game()
 		cout << "Game could not load content!" << endl;
 	}
 
-<<<<<<< HEAD
 
 
-=======
 	initPlayer();
->>>>>>> aae48b5162fd4d5a7aba93ae10a25dd9f9fda30d
+
+
 }
 
 Game::~Game()
@@ -131,7 +132,9 @@ bool Game::GAME_Init()
 		}
 	}
 
+
 	GAME_initializeMap();
+
 	return success;
 }
 
@@ -159,7 +162,6 @@ void Game::run()
 		GAME_Update();
 		GAME_Draw();
 
-		
 	}
 
 }
@@ -172,12 +174,8 @@ void Game::GAME_Update()
 		if (event.type == SDL_QUIT)
 			gameOver = true;
 	}
-<<<<<<< HEAD
-	
-	//player->Update(SDL_GetKeyboardState(NULL));
-	
-	
-=======
+
+
 
 	for (int i = 0; i < projectiles->size();i++)
 	{
@@ -185,15 +183,15 @@ void Game::GAME_Update()
 	}
 
 	player->Update(SDL_GetKeyboardState(NULL));
-	//removeInactiveObjects();
 
-	cout << "Projectile count: " << projectiles->size() << endl;
->>>>>>> aae48b5162fd4d5a7aba93ae10a25dd9f9fda30d
+
+	removeInactiveObjects();
+
 }
 
 void Game::GAME_Draw()
 {
-<<<<<<< HEAD
+
 	GAME_drawLandscape();
 	/*SDL_BlitScaled(bg_texture, NULL, buffer, bg_rect);
 	player->Draw(buffer);
@@ -343,7 +341,9 @@ void Game::GAME_drawLandscape(){
 	}
 
 	SDL_UpdateWindowSurface(main_window);
-=======
+
+
+
 	SDL_RenderClear(main_renderer);
 	
 	SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
@@ -351,7 +351,12 @@ void Game::GAME_drawLandscape(){
 
 	for (int i = 0; i < projectiles->size(); i++)
 	{
-		projectiles->at(i)->Draw(main_renderer);
+
+		if (projectiles->at(i)->getActive())
+			projectiles->at(i)->Draw(main_renderer);
+		else
+			cout << "Not active!" << endl;
+
 	}
 	SDL_RenderPresent(main_renderer);
 }
@@ -371,5 +376,5 @@ void Game::removeInactiveObjects()
 		}
 	}
 	
->>>>>>> aae48b5162fd4d5a7aba93ae10a25dd9f9fda30d
+
 }

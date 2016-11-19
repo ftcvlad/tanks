@@ -17,7 +17,9 @@ private:
 	int speedx;
 	int speedy;
 public:
-	Projectile(SDL_Texture* texture, Constants::Direction dir);
+
+	Projectile(SDL_Texture* texture, Constants::Direction dir, int x, int y);
+
 	~Projectile();
 	void Update();
 	void Draw(SDL_Renderer* renderer);

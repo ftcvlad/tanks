@@ -47,8 +47,14 @@ void Tank::Update(const Uint8* keyboardState)
 		direction = Constants::Right;
 	}
 
-	if (keyboardState[SDL_SCANCODE_SPACE])
-		projectiles->push_back(new Projectile(projectile_texture, direction));
+
+	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
+	{
+		shot = true;
+		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2), drawRect->y + (drawRect->h / 2)));
+	}
+	else if (!keyboardState[SDL_SCANCODE_SPACE])
+		shot = false;
 
 	if (x + drawRect->w >= Constants::SCREEN_WIDTH)
 		x = Constants::SCREEN_WIDTH - drawRect->w;

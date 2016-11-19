@@ -1,11 +1,20 @@
 #include "Projectile.h"
 
 
-Projectile::Projectile(SDL_Texture* texture, Constants::Direction dir)
+
+#include <iostream>
+using namespace std;
+Projectile::Projectile(SDL_Texture* texture, Constants::Direction dir, int x, int y)
+
 {
 	this->texture = texture;
 	active = true;
 	drawRect = new SDL_Rect();
+
+
+	drawRect->x = x;
+	drawRect->y = y;
+
 	SDL_QueryTexture(texture, NULL, NULL, &drawRect->w, &drawRect->h);
 
 	switch (dir)
@@ -17,10 +26,11 @@ Projectile::Projectile(SDL_Texture* texture, Constants::Direction dir)
 		speedy = Constants::PROJECTILE_SPEED;
 		break;
 	case Constants::Left:
-		speedx = Constants::PROJECTILE_SPEED;
+		speedx = -Constants::PROJECTILE_SPEED;
 		break;
 	case Constants::Right:
-		speedy = -Constants::PROJECTILE_SPEED;
+		speedx = Constants::PROJECTILE_SPEED;
+
 		break;
 	}
 }
