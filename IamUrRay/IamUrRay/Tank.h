@@ -13,6 +13,7 @@ private:
 
 	Constants::Direction direction;
 	Constants::Direction prevDirection;
+	Constants::Direction collisionDirection;
 
 	float x;
 	float y;

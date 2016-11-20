@@ -8,6 +8,7 @@ Tank::Tank(SDL_Texture* texture, SDL_Texture* projectile_texture, vector<Project
 	this->texture = texture;
 	this->projectile_texture = projectile_texture;
 	this->projectiles = projectiles;
+	collisionDirection = Constants::None;
 	initTank();
 }
 
@@ -23,6 +24,7 @@ void Tank::Update(const Uint8* keyboardState)
 {
 	x_speed = 0;
 	y_speed = 0;
+
 	if (keyboardState[SDL_SCANCODE_W])
 	{
 		y_speed = -speedMax;
@@ -44,21 +46,17 @@ void Tank::Update(const Uint8* keyboardState)
 		direction = Constants::Right;
 	}
 
-	if (!cur_direction_collision)
+	if (cur_direction_collision)
+	{
+		cur_direction_collision = false;
+	}
+	else
 	{
 		x += x_speed;
 		y += y_speed;
 	}
-	else
-	{
-		if (prevDirection == direction)
-		{
-			x_speed = 0;
-			y_speed = 0;
-		}
-	}
-	cur_direction_collision = false;
 
+	//shooting
 	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
 	{
 		shot = true;
@@ -67,6 +65,7 @@ void Tank::Update(const Uint8* keyboardState)
 	else if (!keyboardState[SDL_SCANCODE_SPACE])
 		shot = false;
 
+	//clamp to borders of screent
 	if (x + drawRect->w >= Constants::SCREEN_WIDTH)
 		x = Constants::SCREEN_WIDTH - drawRect->w;
 	else if (x <= 0)
@@ -82,7 +81,6 @@ void Tank::Update(const Uint8* keyboardState)
 	drawRect->y = y;
 
 	prevDirection = direction;
-
 //	cout << "PlayerX: " << drawRect->x << "\nPlayerY: " << drawRect->y << endl;
 }
 
@@ -122,29 +120,37 @@ void Tank::initTank()
 
 bool Tank::collides(SDL_Rect* rectangle)
 {
-	bool collides = true;
+	SDL_Rect* rect = new SDL_Rect();
+	bool collides = SDL_HasIntersection(rectangle, drawRect);
+	
+	////tank sides
+	//int tankLeft = drawRect->x;
+	//int tankRight = drawRect->x + drawRect->w;
+	//int tankTop = drawRect->y;
+	//int tankBottom = drawRect->y + drawRect->h;
 
-	//tank sides
-	int tankLeft = drawRect->x;
-	int tankRight = drawRect->x + drawRect->w;
-	int tankTop = drawRect->y;
-	int tankBottom = drawRect->y + drawRect->h;
+	////object sides
+	//int objLeft = rectangle->x;
+	//int objRight = rectangle->x + rectangle->w;
+	//int objTop = rectangle->y;
+	//int objBottom = rectangle->y + rectangle->h;
 
-	//object sides
-	int objLeft = rectangle->x;
-	int objRight = rectangle->x + rectangle->w;
-	int objTop = rectangle->y;
-	int objBottom = rectangle->y + rectangle->h;
-
-	if (tankBottom+3 < objTop)
-		collides = false;
-	else if (tankTop-3 > objBottom)
-		collides = false;
-	else if (tankLeft-3 > objRight)
-		collides = false;
-	else if (tankRight+3 < objLeft)
-		collides = false;
-
+	//if (tankBottom + 10*y_speed < objTop)
+	//{
+	//	collides = false;
+	//}
+	//else if (tankTop - 10*y_speed > objBottom)
+	//{
+	//	collides = false;
+	//}
+	//else if (tankLeft - 10*x_speed > objRight)
+	//{
+	//	collides = false;
+	//}
+	//else if (tankRight + 10*x_speed < objLeft)
+	//{
+	//	collides = false;
+	//}
 
 	return collides;
 }

@@ -182,9 +182,8 @@ void Game::GAME_Update()
 		projectiles->at(i)->Update();
 	}
 
-	player->Update(SDL_GetKeyboardState(NULL));
-
 	checkCollisions();
+	player->Update(SDL_GetKeyboardState(NULL));
 
 	removeInactiveObjects();
 }

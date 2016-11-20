@@ -4,7 +4,7 @@ class Constants
 {
 public:
 
-	enum Direction{ Up = 0, Right = 1, Down = 2, Left = 3 };
+	enum Direction{ Up = 0, Right = 1, Down = 2, Left = 3, None = 4 };
 	enum ProjectileOwner{ Friendly = 0, Enemy = 1 };
 
 	static const int SCREEN_WIDTH = 832;
