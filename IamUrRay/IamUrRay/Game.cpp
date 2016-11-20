@@ -153,9 +153,9 @@ bool Game::initEnemies()
 		return false;
 	}
 
-	enemies->push_back(new EnemyTank(texture, 340, 430, Constants::Down, projectile_texture, projectiles));
-	enemies->push_back(new EnemyTank(texture2, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, Constants::SCREEN_HEIGHT - Constants::TILE_HEIGHT, Constants::Down, projectile_texture, projectiles));
-	enemies->push_back(new EnemyTank(texture1, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, 10, Constants::Down, projectile_texture, projectiles));
+	enemies->push_back(new EnemyTank(texture, 0, 0, Constants::Down, projectile_texture, projectiles));
+	enemies->push_back(new EnemyTank(texture2, Constants::START_X_2, Constants::START_Y_2, Constants::Down, projectile_texture, projectiles));
+	enemies->push_back(new EnemyTank(texture1, Constants::START_X_3, Constants::START_Y_3, Constants::Down, projectile_texture, projectiles));
 
 
 	return true;
@@ -257,15 +257,18 @@ void Game::GAME_Update()
 	for (int i = 0; i < enemies->size(); i++)
 	{
 		enemies->at(i)->Update();
+
+		
 	}
+	//cout << enemies->at(0)->x << endl;
 	removeInactiveObjects();
 
 	if (player->isDead())
 	{
 		//respawn player if dead and spawn unoccupied
 		SDL_Rect* r = new SDL_Rect();
-		r->x = 0;
-		r->y = 0;
+		r->x = Constants::START_X;
+		r->y = Constants::START_Y;
 		r->w = Constants::TILE_WIDTH;
 		r->h = Constants::TILE_HEIGHT;
 		bool intersects = false;
@@ -278,6 +281,50 @@ void Game::GAME_Update()
 			player->respawn();
 	}
 	//cout << "enemies alive: " << enemies->size() << endl;
+
+
+	//ADD NEW ENEMY
+	if (enemies->size() < 3){
+
+		int randInd = rand() % (3) ;
+
+		SDL_Rect r;
+		r.w = Constants::TILE_WIDTH;
+		r.h = Constants::TILE_HEIGHT;
+		if (randInd==0){
+			r.x = Constants::START_X_1;
+			r.y = Constants::START_Y_1;
+		}
+		else if (randInd == 1){
+			r.x = Constants::START_X_2;
+			r.y = Constants::START_Y_2;
+		}
+		else if (randInd == 2){
+			r.x = Constants::START_X_3;
+			r.y = Constants::START_Y_3;
+		}
+
+		bool intersects = false;
+		if (SDL_HasIntersection(player->getRect(), &r)){
+			intersects = true;
+		}
+		else{
+			for (unsigned int k = 0; k < (*enemies).size(); k++){
+
+				if (SDL_HasIntersection(enemies->at(k)->getRect(), &r)){
+					intersects = true;
+					break;
+				}
+			}
+		}
+
+		if (!intersects){
+			// enemies->push_back(new EnemyTank(texture, 0, 0, Constants::Down, projectile_texture, projectiles));
+		}
+		
+
+
+	}
 }
 
 void Game::GAME_Draw()

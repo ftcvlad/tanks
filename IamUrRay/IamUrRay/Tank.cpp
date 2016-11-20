@@ -73,7 +73,7 @@ void Tank::Update(const Uint8* keyboardState)
 	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
 	{
 		shot = true;
-		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2), drawRect->y + (drawRect->h / 2), Constants::Friendly));
+		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2) - Constants::PROJECTILE_WIDTH / 2, drawRect->y + (drawRect->h / 2) - Constants::PROJECTILE_HEIGHT / 2, Constants::Friendly));
 	}
 	else if (!keyboardState[SDL_SCANCODE_SPACE])
 		shot = false;
@@ -94,11 +94,13 @@ void Tank::Update(const Uint8* keyboardState)
 	drawRect->y = y;
 
 	prevDirection = direction;
-//	cout << "PlayerX: " << drawRect->x << "\nPlayerY: " << drawRect->y << endl;
+
 }
 
 void Tank::Draw(SDL_Renderer* renderer)
 {
+
+	
 	switch (direction)
 	{
 	case Constants::Up:
@@ -122,13 +124,16 @@ void Tank::initTank()
 	drawRect = new SDL_Rect();
 	drawRect->h = Constants::TILE_HEIGHT;
 	drawRect->w = Constants::TILE_WIDTH;
-	drawRect->x = 1;
-	drawRect->y =1;
+	drawRect->x = Constants::START_X;
+	drawRect->y = Constants::START_Y;
 
+	x = Constants::START_X;
+	y = Constants::START_Y;
+	
 	x_speed = 0;
 	y_speed = 0;
 
-	direction = Constants::Down;
+	direction = Constants::Up;
 }
 
 
@@ -156,15 +161,22 @@ SDL_Rect* Tank::getRect(){
 void Tank::respawn()
 {
 	lives--;
-	x = 0;
-	y = 0;
+	x = Constants::START_X;
+	y = Constants::START_Y;
+	direction = Constants::Up;
+
 	dead = false;
 }
 
 void Tank::die()
 {
-	drawRect->x = -200;
-	drawRect->y = -100;
+	/*drawRect->x = Constants::START_X_1;
+	drawRect->y = Constants::START_Y_1;
+	x = Constants::START_X_1;
+	y = Constants::START_Y_1;*/
+
+
+
 	dead = true;
 }
 

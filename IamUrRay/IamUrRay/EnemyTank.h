@@ -24,8 +24,7 @@ private:
 
 	Constants::Direction direction;
 
-	float x;
-	float y;
+	
 
 	
 
@@ -49,6 +48,9 @@ public:
 	float y_speed;
 	void die();
 	bool isActive(){ return active; }
+
+	float x;
+	float y;
 };
 
 #endif

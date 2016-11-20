@@ -21,6 +21,23 @@ public:
 	static const int PROJECTILE_SPEED = 1;
 
 	static const int LIFE_COUNT = 10;
+
+	static const int START_X = 9 * 32;
+	static const int START_Y = (26 - 2) * 32;
+
+
+	static const int START_X_1 = 0;
+	static const int START_Y_1 = 0;
+
+	static const int START_X_2 = 12*32;
+	static const int START_Y_2 = 0;
+
+	static const int START_X_3 = 24*32;
+	static const int START_Y_3 = 0;
+
+
+	//static const int START_X = 288;
+	//static const int START_Y = 768;
 };
 
 
