@@ -31,23 +31,32 @@ void Tank::Update(const Uint8* keyboardState)
 
 	if (keyboardState[SDL_SCANCODE_W])
 	{
+		adjustXPosition();
 		y_speed = -speedMax;
 		direction = Constants::Up;
+
 	}
 	else if (keyboardState[SDL_SCANCODE_S])
 	{
+		adjustXPosition();
 		y_speed = speedMax;
 		direction = Constants::Down;
 	}
 	else if (keyboardState[SDL_SCANCODE_A])
 	{
+		adjustYPosition();
+
 		x_speed = -speedMax;
 		direction = Constants::Left;
+
 	}
 	else if (keyboardState[SDL_SCANCODE_D])
 	{
+		adjustYPosition();
+
 		x_speed = speedMax;
 		direction = Constants::Right;
+
 	}
 
 	if (cur_direction_collision)
@@ -128,34 +137,7 @@ bool Tank::collides(SDL_Rect* rectangle)
 	SDL_Rect* rect = new SDL_Rect();
 	bool collides = SDL_HasIntersection(rectangle, drawRect);
 	
-	////tank sides
-	//int tankLeft = drawRect->x;
-	//int tankRight = drawRect->x + drawRect->w;
-	//int tankTop = drawRect->y;
-	//int tankBottom = drawRect->y + drawRect->h;
-
-	////object sides
-	//int objLeft = rectangle->x;
-	//int objRight = rectangle->x + rectangle->w;
-	//int objTop = rectangle->y;
-	//int objBottom = rectangle->y + rectangle->h;
-
-	//if (tankBottom + 10*y_speed < objTop)
-	//{
-	//	collides = false;
-	//}
-	//else if (tankTop - 10*y_speed > objBottom)
-	//{
-	//	collides = false;
-	//}
-	//else if (tankLeft - 10*x_speed > objRight)
-	//{
-	//	collides = false;
-	//}
-	//else if (tankRight + 10*x_speed < objLeft)
-	//{
-	//	collides = false;
-	//}
+	
 
 	return collides;
 }
@@ -184,4 +166,35 @@ void Tank::die()
 	drawRect->x = -200;
 	drawRect->y = -100;
 	dead = true;
+}
+
+
+void Tank::adjustXPosition(){
+	if (direction != Constants::Down && direction != Constants::Up){
+		int leftX = ((int)x / 32) * 32;
+
+		int rightX = (((int)x / 32) + 1) * 32;
+
+		if (abs(x - leftX) < abs(x - rightX)){
+			x = leftX;
+		}
+		else{
+			x = rightX;
+		}
+	}
+}
+
+void Tank::adjustYPosition(){
+	if (direction != Constants::Right && direction != Constants::Left){
+		int topY = ((int)y / 32) * 32;
+		int bottomY = (((int)y / 32) + 1) * 32;
+
+		if (abs(y - topY) < abs(y - bottomY)){
+			y = topY;
+		}
+		else{
+			y = bottomY;
+		}
+
+	}
 }

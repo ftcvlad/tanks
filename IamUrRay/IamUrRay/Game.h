@@ -65,6 +65,8 @@ public:
 
 	void addProjectile(Projectile* new_projectile);
 	void removeInactiveObjects();
+
+	void Game::bulletDestroy(Projectile* target);
 };
 #endif
 

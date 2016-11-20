@@ -49,5 +49,7 @@ public:
 	void respawn();
 
 	bool isDead(){ return dead; }
+	void adjustXPosition();
+	void adjustYPosition();
 };
 #endif
