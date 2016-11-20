@@ -21,18 +21,6 @@ Tank::~Tank()
 
 void Tank::Update(const Uint8* keyboardState)
 {
-	if (!cur_direction_collision)
-	{
-		x += x_speed;
-		y += y_speed;
-	}
-	else
-	{
-		cur_direction_collision = false;
-		x -= x_speed;
-		y -= y_speed;
-	}
-
 	x_speed = 0;
 	y_speed = 0;
 	if (keyboardState[SDL_SCANCODE_W])
@@ -56,6 +44,20 @@ void Tank::Update(const Uint8* keyboardState)
 		direction = Constants::Right;
 	}
 
+	if (!cur_direction_collision)
+	{
+		x += x_speed;
+		y += y_speed;
+	}
+	else
+	{
+		if (prevDirection == direction)
+		{
+			x_speed = 0;
+			y_speed = 0;
+		}
+	}
+	cur_direction_collision = false;
 
 	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
 	{
@@ -78,6 +80,8 @@ void Tank::Update(const Uint8* keyboardState)
 
 	drawRect->x = x;
 	drawRect->y = y;
+
+	prevDirection = direction;
 
 //	cout << "PlayerX: " << drawRect->x << "\nPlayerY: " << drawRect->y << endl;
 }
@@ -118,9 +122,35 @@ void Tank::initTank()
 
 bool Tank::collides(SDL_Rect* rectangle)
 {
-	bool collides = false;
+	bool collides = true;
+
+	//tank sides
+	int tankLeft = drawRect->x;
+	int tankRight = drawRect->x + drawRect->w;
+	int tankTop = drawRect->y;
+	int tankBottom = drawRect->y + drawRect->h;
+
+	//object sides
+	int objLeft = rectangle->x;
+	int objRight = rectangle->x + rectangle->w;
+	int objTop = rectangle->y;
+	int objBottom = rectangle->y + rectangle->h;
+
+	if (tankBottom+3 < objTop)
+		collides = false;
+	else if (tankTop-3 > objBottom)
+		collides = false;
+	else if (tankLeft-3 > objRight)
+		collides = false;
+	else if (tankRight+3 < objLeft)
+		collides = false;
 
 
 	return collides;
+}
+
+void Tank::setBlocked()
+{
+	cur_direction_collision = true;
 }
 

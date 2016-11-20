@@ -184,9 +184,9 @@ void Game::GAME_Update()
 
 	player->Update(SDL_GetKeyboardState(NULL));
 
+	checkCollisions();
 
 	removeInactiveObjects();
-	cout << "Projectiles: " << projectiles->size() << endl;
 }
 
 void Game::GAME_Draw()
@@ -343,7 +343,7 @@ bool Game::GAME_initializeMap(){
 			nextRect->w =  32;
 			nextRect->h = 32;
 
-			if (textMap[row][c]==2){//grass
+			if (textMap[row][c] == 2 || textMap[row][c] == 0){//grass
 				allTiles.push_back(new Tile2(nextRect, true));
 			}
 			else {//other
@@ -401,9 +401,12 @@ void Game::checkCollisions()
 	//check tile collisions with the tank
 	for (int i = 0; i < allTiles.size(); i++)
 	{
-		if (player->collides(allTiles.at(i)->rect))
+		if (!allTiles.at(i)->canIntersect)
 		{
-			
+			if (player->collides(allTiles.at(i)->rect))
+			{
+				player->setBlocked();
+			}
 		}
 	}
 }
@@ -421,6 +424,7 @@ void Game::removeInactiveObjects()
 			delete temp;
 			counter++;
 		}
+
 	}
 	
 

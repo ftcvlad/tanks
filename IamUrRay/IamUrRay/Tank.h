@@ -12,6 +12,8 @@ class Tank
 private:
 
 	Constants::Direction direction;
+	Constants::Direction prevDirection;
+
 	float x;
 	float y;
 	float x_speed;
@@ -36,5 +38,6 @@ public:
 	void Draw(SDL_Renderer* main_renderer);
 	void initTank();
 	bool collides(SDL_Rect* rectangle);
+	void setBlocked();
 };
 #endif
