@@ -10,6 +10,18 @@ using namespace std;
 
 Game::Game()
 {
+	init();
+
+}
+
+
+Game::~Game()
+{
+	reset();
+}
+
+void Game::init()
+{
 	gui = new GUI();
 	SCREEN_WIDTH = Constants::SCREEN_WIDTH;
 	SCREEN_HEIGHT = Constants::SCREEN_HEIGHT;
@@ -21,6 +33,7 @@ Game::Game()
 	bg_rect->y = 0;
 	projectiles = new vector<Projectile*>();
 	gameOver = false;
+	lost = false;
 	if (!GAME_Init())
 	{
 		cout << "Game could not initialise properly!" << endl;
@@ -31,19 +44,19 @@ Game::Game()
 		cout << "Game could not load content!" << endl;
 	}
 
+	
 
 	initEnemies();
 	initPlayer();
 
-
 }
 
-Game::~Game()
+void Game::reset()
 {
 	SDL_FreeSurface(texture1);
 	texture1 = NULL;
 	SDL_DestroyTexture(bg_texture);
-	
+
 	SDL_FreeSurface(buffer_surface);
 	buffer_surface = NULL;
 	SDL_DestroyWindow(main_window);
@@ -102,41 +115,42 @@ bool Game::initPlayer()
 bool Game::initEnemies()
 {
 	enemies = new vector<EnemyTank*>();
+
 	SDL_Surface* temp_surface = IMG_Load("graphics/enemyTank1.png");
 	if (temp_surface == NULL)
 	{
 		cout << "Couldn't load enemy texture! Error: " << SDL_GetError() << endl;
 		return false;
 	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(main_renderer, temp_surface);
+	highHpTank = SDL_CreateTextureFromSurface(main_renderer, temp_surface);
 	SDL_FreeSurface(temp_surface);
-	if (texture == NULL)
+	if (highHpTank == NULL)
 	{
 		cout << "Couldn't parse enemy texture! Error: " << SDL_GetError() << endl;
 	}
 
-	SDL_Surface* temp_surface1 = IMG_Load("graphics/enemyTank1.png");
+	SDL_Surface* temp_surface1 = IMG_Load("graphics/enemyTank3.png");
 	if (temp_surface1 == NULL)
 	{
 		cout << "Couldn't load enemy texture! Error: " << SDL_GetError() << endl;
 		return false;
 	}
-	SDL_Texture* texture1 = SDL_CreateTextureFromSurface(main_renderer, temp_surface1);
+	middleHpTank = SDL_CreateTextureFromSurface(main_renderer, temp_surface1);
 	SDL_FreeSurface(temp_surface1);
-	if (texture1 == NULL)
+	if (middleHpTank == NULL)
 	{
 		cout << "Couldn't parse enemy texture! Error: " << SDL_GetError() << endl;
 	}
 
-	SDL_Surface* temp_surface2 = IMG_Load("graphics/enemyTank1.png");
+	SDL_Surface* temp_surface2 = IMG_Load("graphics/enemyTank2.png");
 	if (temp_surface2 == NULL)
 	{
 		cout << "Couldn't load enemy texture! Error: " << SDL_GetError() << endl;
 		return false;
 	}
-	SDL_Texture* texture2 = SDL_CreateTextureFromSurface(main_renderer, temp_surface2);
+	lowHpTank = SDL_CreateTextureFromSurface(main_renderer, temp_surface2);
 	SDL_FreeSurface(temp_surface2);
-	if (texture2 == NULL)
+	if (lowHpTank == NULL)
 	{
 		cout << "Couldn't parse enemy texture! Error: " << SDL_GetError() << endl;
 	}
@@ -155,9 +169,9 @@ bool Game::initEnemies()
 		return false;
 	}
 
-	enemies->push_back(new EnemyTank(texture, 340, 430, Constants::Down, projectile_texture, projectiles));
-	enemies->push_back(new EnemyTank(texture2, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, Constants::SCREEN_HEIGHT - Constants::TILE_HEIGHT, Constants::Down, projectile_texture, projectiles));
-	enemies->push_back(new EnemyTank(texture1, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, 10, Constants::Down, projectile_texture, projectiles));
+	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, 340, 430, Constants::Down, projectile_texture, projectiles, 2));
+	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, Constants::SCREEN_HEIGHT - Constants::TILE_HEIGHT, Constants::Down, projectile_texture, projectiles, 3));
+	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, 10, Constants::Down, projectile_texture, projectiles, 1));
 
 
 	return true;
@@ -203,6 +217,12 @@ bool Game::GAME_Init()
 		}
 	}
 
+	SDL_Surface* temp = IMG_Load("graphics/gameOverScreen.png");
+	if (temp == NULL)
+		cout << "Couldn't load gameOverScreen! Error: " << SDL_GetError() << endl;
+
+	gameOverScreen = SDL_CreateTextureFromSurface(main_renderer, temp);
+	SDL_FreeSurface(temp);
 
 	GAME_initializeMap();
 
@@ -232,13 +252,13 @@ void Game::run()
 	{
 		GAME_Update();
 		GAME_Draw();
-
 	}
 
 }
 
 void Game::GAME_Update()
 {
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event) != 0)
 	{
@@ -247,67 +267,117 @@ void Game::GAME_Update()
 	}
 
 
-
-	for (int i = 0; i < projectiles->size();i++)
+	if (!lost)
 	{
-		projectiles->at(i)->Update();
-		bulletDestroy(projectiles->at(i));
-	}
-
-	checkCollisions();
-	player->Update(SDL_GetKeyboardState(NULL));
-	for (int i = 0; i < enemies->size(); i++)
-	{
-		enemies->at(i)->Update();
-	}
-	removeInactiveObjects();
-
-	if (player->isDead())
-	{
-		//respawn player if dead and spawn unoccupied
-		SDL_Rect* r = new SDL_Rect();
-		r->x = 0;
-		r->y = 0;
-		r->w = Constants::TILE_WIDTH;
-		r->h = Constants::TILE_HEIGHT;
-		bool intersects = false;
-		for (int i = 0; i < enemies->size(); i++)
+		if (!pause)
 		{
-			if (SDL_HasIntersection(enemies->at(i)->getRect(), r))
-				intersects = true;
-		}
-		if (!intersects)
-			player->respawn();
-	}
+			for (int i = 0; i < projectiles->size(); i++)
+			{
+				projectiles->at(i)->Update();
+				bulletDestroy(projectiles->at(i));
+			}
 
-	gui->Update(player->getLives(), enemies->size());
-	//cout << "enemies alive: " << enemies->size() << endl;
+			checkCollisions();
+			player->Update(SDL_GetKeyboardState(NULL));
+			for (int i = 0; i < enemies->size(); i++)
+			{
+				enemies->at(i)->Update();
+			}
+			removeInactiveObjects();
+
+			if (player->isDead())
+			{
+				//respawn player if dead and spawn unoccupied
+				SDL_Rect* r = new SDL_Rect();
+				r->x = 0;
+				r->y = 0;
+				r->w = Constants::TILE_WIDTH;
+				r->h = Constants::TILE_HEIGHT;
+				bool intersects = false;
+				for (int i = 0; i < enemies->size(); i++)
+				{
+					if (SDL_HasIntersection(enemies->at(i)->getRect(), r))
+						intersects = true;
+				}
+				if (!intersects)
+					player->respawn();
+			}
+			spawnEnemies();
+
+			gui->Update(player->getLives(), enemies->size());
+			if (player->getLives() <= 0)
+				lost = true;
+		}
+
+		//pause the game (toggles by pressing escape)
+		const Uint8* state = SDL_GetKeyboardState(NULL);
+		if (state[SDL_SCANCODE_ESCAPE])
+		{
+			if (pause && !pausepressed)
+			{
+				pause = false;
+				pausepressed = true;
+			}
+			else if (!pause && !pausepressed)
+			{
+				pause = true;
+				pausepressed = true;
+			}
+			
+		}
+		else if (!state[SDL_SCANCODE_ESCAPE])
+		{
+			pausepressed = false;
+		}
+	}
+	else
+	{
+		//game over window - restart/quit
+		const Uint8* state = SDL_GetKeyboardState(NULL);
+		if (state[SDL_SCANCODE_R])
+		{
+			reset();
+			init();
+		}
+		else if (state[SDL_SCANCODE_Q])
+		{
+			gameOver = true;
+		}
+		delete state;
+	}
 }
 
 void Game::GAME_Draw()
 {
 	SDL_RenderClear(main_renderer);
-	SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
-
-	GAME_drawLandscape();
-
-
-
-	for (int i = 0; i < projectiles->size(); i++)
+	if (!lost)
 	{
-		if (projectiles->at(i)->getActive())
-			projectiles->at(i)->Draw(main_renderer);
-	}
+		SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
 
-	player->Draw(main_renderer);
-	for (int i = 0; i < enemies->size(); i++)
+		GAME_drawLandscape();
+
+
+
+		for (int i = 0; i < projectiles->size(); i++)
+		{
+			if (projectiles->at(i)->getActive())
+				projectiles->at(i)->Draw(main_renderer);
+		}
+
+		player->Draw(main_renderer);
+		for (int i = 0; i < enemies->size(); i++)
+		{
+			enemies->at(i)->Draw(main_renderer);
+		}
+
+		//gui->Draw(main_renderer);
+		SDL_RenderPresent(main_renderer);
+	}
+	else
 	{
-		enemies->at(i)->Draw(main_renderer);
+		SDL_RenderCopy(main_renderer, gameOverScreen, NULL, bg_rect);
+		SDL_RenderPresent(main_renderer);
 	}
-
-	gui->Draw(main_renderer);
-	SDL_RenderPresent(main_renderer);
-	
 	
 }
 
@@ -535,6 +605,7 @@ void Game::checkCollisions()
 			if (SDL_HasIntersection(projectiles->at(i)->getRect(), player->getRect()))
 			{
 				player->die();
+				projectiles->at(i)->setActive(false);
 			}
 	}
 
@@ -663,7 +734,6 @@ void Game::bulletDestroy(Projectile* target){
 
 		if (SDL_HasIntersection(allTiles.at(k)->rect, target->getRect())){
 
-
 			if (allTiles.at(k)->type == 1){//brick
 
 				allTiles.erase(allTiles.begin() + k);
@@ -677,8 +747,18 @@ void Game::bulletDestroy(Projectile* target){
 			else if (allTiles.at(k)->type == 2){//grass
 
 			}
+			else if (allTiles.at(k)->type == 7 || allTiles.at(k)->type == 8 || allTiles.at(k)->type == 9 || allTiles.at(k)->type == 6)//bird
+			{
+				lost = true;
+			}
 		}
 
 
 	}
+}
+
+void Game::spawnEnemies()
+{
+
+
 }

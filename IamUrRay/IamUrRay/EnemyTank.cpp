@@ -1,10 +1,12 @@
 #include "EnemyTank.h"
 
 using namespace std;
-EnemyTank::EnemyTank(SDL_Texture* texture, int x, int y, Constants::Direction direction, SDL_Texture* projectile_texture, vector<Projectile*>* projectiles)
+EnemyTank::EnemyTank(SDL_Texture* lowTexture, SDL_Texture* middleTexture, SDL_Texture* highTexture, int x, int y, Constants::Direction direction, SDL_Texture* projectile_texture, vector<Projectile*>* projectiles, int lives)
 {
 	srand(time(NULL));
-	this->texture = texture;
+	this->lowTexture = lowTexture;
+	this->middleTexture = middleTexture;
+	this->highTexture = highTexture;
 	this->projectile_texture = projectile_texture;
 	this->projectiles = projectiles;
 	drawRect = new SDL_Rect();
@@ -14,7 +16,7 @@ EnemyTank::EnemyTank(SDL_Texture* texture, int x, int y, Constants::Direction di
 	drawRect->y = y;
 	this->x = x;
 	this->y = y;
-
+	this->lives = lives;
 	active = true;
 	reloading = true;
 
@@ -22,6 +24,13 @@ EnemyTank::EnemyTank(SDL_Texture* texture, int x, int y, Constants::Direction di
 
 	totalReloadTime = rand() % 1000 + 1000;
 	elapsedReloadTime = 0;
+
+	if (lives == 1)
+		curTexture = lowTexture;
+	else if (lives == 2)
+		curTexture = middleTexture;
+	else
+		curTexture = highTexture;
 }
 
 
@@ -92,16 +101,16 @@ void EnemyTank::Draw(SDL_Renderer* renderer)
 	switch (direction)
 	{
 	case Constants::Up:
-		SDL_RenderCopyEx(renderer, texture, NULL, drawRect, 0, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, curTexture, NULL, drawRect, 0, NULL, SDL_FLIP_NONE);
 		break;
 	case Constants::Down:
-		SDL_RenderCopyEx(renderer, texture, NULL, drawRect, 180, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, curTexture, NULL, drawRect, 180, NULL, SDL_FLIP_NONE);
 		break;
 	case Constants::Right:
-		SDL_RenderCopyEx(renderer, texture, NULL, drawRect, 90, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, curTexture, NULL, drawRect, 90, NULL, SDL_FLIP_NONE);
 		break;
 	case Constants::Left:
-		SDL_RenderCopyEx(renderer, texture, NULL, drawRect, 270, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, curTexture, NULL, drawRect, 270, NULL, SDL_FLIP_NONE);
 		break;
 	}
 }
@@ -135,12 +144,21 @@ void EnemyTank::changeDirection()
 
 void EnemyTank::shoot()
 {
-	projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + drawRect->w / 2, drawRect->y + drawRect->h / 2, Constants::Enemy));
+	int proj_width;
+	int proj_height;
+	SDL_QueryTexture(projectile_texture, NULL, NULL, &proj_width, &proj_height);
+	projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + drawRect->w / 2 - proj_width/2, drawRect->y + drawRect->h / 2 - proj_height/2, Constants::Enemy));
 	totalReloadTime = rand() % 1000 + 1000;
 }
 
 void EnemyTank::die()
 {
-	active = false;
+	lives--;
+	if (lives == 2)
+		curTexture = middleTexture;
+	else if (lives == 1)
+		curTexture = lowTexture;
+	if (lives <= 0)
+		active = false;
 }
 

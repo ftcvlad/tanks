@@ -49,11 +49,10 @@ public:
 	void respawn();
 
 	bool isDead(){ return dead; }
-<<<<<<< HEAD
 	int getLives(){ return lives; }
-=======
+
 	void adjustXPosition();
 	void adjustYPosition();
->>>>>>> 9064a81f04fcc277675b488042c5dc57b2fe5f43
+
 };
 #endif

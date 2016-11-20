@@ -20,7 +20,7 @@ public:
 	static const int PROJECTILE_HEIGHT = 5;
 	static const int PROJECTILE_SPEED = 1;
 
-	static const int LIFE_COUNT = 10;
+	static const int LIFE_COUNT = 5;
 };
 
 
