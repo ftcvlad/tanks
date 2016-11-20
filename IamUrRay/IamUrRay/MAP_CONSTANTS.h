@@ -18,7 +18,7 @@ public:
 
 	static const int PROJECTILE_WIDTH = 5;
 	static const int PROJECTILE_HEIGHT = 5;
-	static const int PROJECTILE_SPEED = 5;
+	static const int PROJECTILE_SPEED = 1;
 
 	static const int LIFE_COUNT = 10;
 };

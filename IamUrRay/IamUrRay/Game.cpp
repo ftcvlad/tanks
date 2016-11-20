@@ -43,7 +43,7 @@ Game::~Game()
 	SDL_FreeSurface(texture1);
 	texture1 = NULL;
 	SDL_DestroyTexture(bg_texture);
-	texture1 = NULL;
+	
 	SDL_FreeSurface(buffer_surface);
 	buffer_surface = NULL;
 	SDL_DestroyWindow(main_window);
@@ -251,6 +251,7 @@ void Game::GAME_Update()
 	for (int i = 0; i < projectiles->size();i++)
 	{
 		projectiles->at(i)->Update();
+		bulletDestroy(projectiles->at(i));
 	}
 
 	checkCollisions();
@@ -423,7 +424,7 @@ bool Game::GAME_initializeMap(){
 	}
 
 	
-	ifstream file("map1.txt");
+	ifstream file("map2.txt");
 	std::string str;
 	int row = 0;
 	while (std::getline(file, str))
@@ -433,22 +434,43 @@ bool Game::GAME_initializeMap(){
 			textMap[row][c] = (str[c] - '0');
 
 			SDL_Rect* nextRect = new SDL_Rect();
-			nextRect -> x = c * 32;
-			nextRect ->y = row * 32;
-			nextRect->w =  32;
+			nextRect->x = c * 32;
+			nextRect->y = row * 32;
+			nextRect->w = 32;
 			nextRect->h = 32;
 
-			if (textMap[row][c] == 2 || textMap[row][c] == 0){//grass
-				allTiles.push_back(new Tile2(nextRect, true));
+			if (textMap[row][c] == 0){//empty
+
+			}
+			else if (textMap[row][c] == 2){//grass
+				allTiles.push_back(new Tile2(nextRect, true, false, row * 26 + c, textMap[row][c]));
 			}
 			else {//other
-				allTiles.push_back(new Tile2(nextRect, false));
+
+				if (textMap[row][c] == 1){//brick
+					allTiles.push_back(new Tile2(nextRect, false, true, row * 26 + c, textMap[row][c]));
+				}
+				else if (textMap[row][c] == 3){//wall
+
+					allTiles.push_back(new Tile2(nextRect, false, false, row * 26 + c, textMap[row][c]));
+				}
+				else{// other
+
+
+					allTiles.push_back(new Tile2(nextRect, false, false, row * 26 + c, textMap[row][c]));
+				}
+
+
 			}
-			
+
 		}
 		row++;
-		
+
 	}
+
+	return true;
+
+
 }
 
 
@@ -457,34 +479,32 @@ void Game::GAME_drawLandscape(){
 	int arrSize = 26;
 	int nextType;
 
-	for (int i = 0; i < arrSize; i++){
-		for (int j = 0; j < arrSize; j++){
-			nextType = textMap[i][j];
-			if (nextType==0){//empty tile
+	for (unsigned int i = 0; i < allTiles.size(); i++){
 
-			}
-			else if (nextType == 1){//brick
-				SDL_RenderCopy(main_renderer, brickTexture, NULL,  allTiles[i * 26 + j]->rect);
-			}
-			else if (nextType == 2){//grass
-				SDL_RenderCopy(main_renderer, brickTexture, NULL, allTiles[i * 26 + j]->rect);
-			}
-			else if (nextType == 3){//wall
-				SDL_RenderCopy(main_renderer, wallTexture, NULL, allTiles[i * 26 + j]->rect);
-			}
-			else if (nextType == 6){//top left
-				SDL_RenderCopy(main_renderer, base_1_Texture, NULL, allTiles[i * 26 + j]->rect);
-			}
-			else if (nextType == 7){//top right
-				SDL_RenderCopy(main_renderer, base_2_Texture, NULL, allTiles[i * 26 + j]->rect);
-			}
-			else if (nextType == 8){//bottom left
-				SDL_RenderCopy(main_renderer, base_3_Texture, NULL, allTiles[i * 26 + j]->rect);
-			}
-			else if (nextType == 9){//skip
-				SDL_RenderCopy(main_renderer, base_4_Texture, NULL, allTiles[i * 26 + j]->rect);
-			}
+		nextType = allTiles.at(i)->type;
+
+		if (nextType == 1){//brick
+			SDL_RenderCopy(main_renderer, brickTexture, NULL, allTiles.at(i)->rect);
 		}
+		else if (nextType == 2){//grass
+			SDL_RenderCopy(main_renderer, grassTexture, NULL, allTiles.at(i)->rect);
+		}
+		else if (nextType == 3){//wall
+			SDL_RenderCopy(main_renderer, wallTexture, NULL, allTiles.at(i)->rect);
+		}
+		else if (nextType == 6){//top left
+			SDL_RenderCopy(main_renderer, base_1_Texture, NULL, allTiles.at(i)->rect);
+		}
+		else if (nextType == 7){//top right
+			SDL_RenderCopy(main_renderer, base_2_Texture, NULL, allTiles.at(i)->rect);
+		}
+		else if (nextType == 8){//bottom left
+			SDL_RenderCopy(main_renderer, base_3_Texture, NULL, allTiles.at(i)->rect);
+		}
+		else if (nextType == 9){//skip
+			SDL_RenderCopy(main_renderer, base_4_Texture, NULL, allTiles.at(i)->rect);
+		}
+
 	}
 }
 
@@ -635,4 +655,30 @@ void Game::removeInactiveObjects()
 		counter++;
 	}
 
+}
+
+void Game::bulletDestroy(Projectile* target){
+	for (int k = 0; k < allTiles.size(); k++){
+
+
+		if (SDL_HasIntersection(allTiles.at(k)->rect, target->getRect())){
+
+
+			if (allTiles.at(k)->type == 1){//brick
+
+				allTiles.erase(allTiles.begin() + k);
+				k--;
+
+				target->setActive(false);
+			}
+			else if (allTiles.at(k)->type == 3){//brick
+				target->setActive(false);
+			}
+			else if (allTiles.at(k)->type == 2){//grass
+
+			}
+		}
+
+
+	}
 }

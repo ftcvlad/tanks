@@ -43,8 +43,12 @@ Projectile::~Projectile()
 
 void Projectile::Update()
 {
-	drawRect->x += speedx;
-	drawRect->y += speedy;
+	updateEvetyNthTime--;
+	if (updateEvetyNthTime == 0){
+		updateEvetyNthTime = 5;
+		drawRect->x += speedx;
+		drawRect->y += speedy;
+	}
 	if (drawRect->x >= Constants::SCREEN_WIDTH || drawRect->x+drawRect->h <= 0 || drawRect->y <= 0 || drawRect->y >= Constants::SCREEN_HEIGHT)
 		active = false;
 }
