@@ -11,18 +11,18 @@ using namespace std;
 Game::Game()
 {
 	init();
-
 }
 
 
 Game::~Game()
 {
 	reset();
+	SDL_Quit();
 }
 
 void Game::init()
 {
-	//gui = new GUI();
+
 	SCREEN_WIDTH = Constants::SCREEN_WIDTH;
 	SCREEN_HEIGHT = Constants::SCREEN_HEIGHT;
 
@@ -45,8 +45,6 @@ void Game::init()
 		cout << "Game could not load content!" << endl;
 	}
 
-	
-
 	initEnemies();
 	initPlayer();
 
@@ -57,6 +55,33 @@ void Game::reset()
 	SDL_FreeSurface(texture1);
 	texture1 = NULL;
 	SDL_DestroyTexture(bg_texture);
+	bg_texture = NULL;
+	SDL_DestroyTexture(highHpTank);
+	highHpTank = NULL;
+	SDL_DestroyTexture(middleHpTank);
+	middleHpTank = NULL;
+	SDL_DestroyTexture(lowHpTank);
+	lowHpTank = NULL;
+	SDL_DestroyTexture(projectileTexture);
+	projectileTexture = NULL;
+	SDL_DestroyTexture(gameOverScreen);
+	gameOverScreen = NULL;
+	SDL_DestroyTexture(brickTexture);
+	brickTexture = NULL; 
+	SDL_DestroyTexture(grassTexture);
+	grassTexture = NULL; 
+	SDL_DestroyTexture(wallTexture);
+	wallTexture = NULL;
+	SDL_DestroyTexture(base_1_Texture);
+	base_1_Texture = NULL;
+	SDL_DestroyTexture(base_2_Texture);
+	base_2_Texture = NULL; 
+	SDL_DestroyTexture(base_3_Texture);
+	base_3_Texture = NULL;
+	SDL_DestroyTexture(base_4_Texture);
+	base_4_Texture = NULL;
+	SDL_DestroyTexture(pauseText);
+	pauseText = NULL;
 
 	SDL_FreeSurface(buffer_surface);
 	buffer_surface = NULL;
@@ -64,7 +89,8 @@ void Game::reset()
 	main_window = NULL;
 
 	delete bg_rect;
-	SDL_Quit();
+	delete player;
+	
 
 	for (int i = 0; i < projectiles->size(); i++)
 	{
@@ -76,7 +102,7 @@ void Game::reset()
 		delete enemies->at(i);
 	}
 	delete enemies;
-	//delete gui;
+
 }
 
 bool Game::initPlayer()
@@ -192,7 +218,7 @@ bool Game::GAME_Init()
 	else
 	{
 		//create window
-		main_window = SDL_CreateWindow("IamUrRay - maingame!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		main_window = SDL_CreateWindow("IamUrRay - maingame!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 		if (main_window == NULL)
 		{
 			cout << "Couldn't initialise window! Error: \n" << SDL_GetError() << endl;
@@ -222,25 +248,79 @@ bool Game::GAME_Init()
 
 	SDL_Surface* temp = IMG_Load("graphics/gameOverScreen.png");
 	if (temp == NULL)
+	{
 		cout << "Couldn't load gameOverScreen! Error: " << SDL_GetError() << endl;
+
+		success = false;
+	}
+
 	gameOverScreen = SDL_CreateTextureFromSurface(main_renderer, temp);
 	SDL_FreeSurface(temp);
 
-	temp = IMG_Load("graphics/winScreen.png");
-	if (temp == NULL)
-		cout << "Couldn't load winScreen! Error: " << SDL_GetError() << endl;
-	winScreen = SDL_CreateTextureFromSurface(main_renderer, temp);
-	SDL_FreeSurface(temp);
+	SDL_Surface* temp1 = IMG_Load("graphics/pause.png");
+	if (temp1 == NULL)
+	{
+		cout << "Couldn't load pause text! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	pauseText = SDL_CreateTextureFromSurface(main_renderer, temp1);
+	if (pauseText == NULL)
+	{
+		cout << "Couldn't convert pause text! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	SDL_FreeSurface(temp1 );
 
+	SDL_Surface* tank_ico = IMG_Load("graphics/tank_icon.png");
+	if (tank_ico == NULL)
+	{
+		cout << "Couldn't load tank icon! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	tank_icon = SDL_CreateTextureFromSurface(main_renderer, tank_ico);
+	if (tank_icon == NULL)
+	{
+		cout << "Failed to parse tank icon! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+
+
+	SDL_Surface* flag_ico = IMG_Load("graphics/life.png");
+	if (flag_ico == NULL)
+	{
+		cout << "Couldn't load flag icon! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	flag_icon = SDL_CreateTextureFromSurface(main_renderer, flag_ico);
+	if (flag_icon == NULL)
+	{
+		cout << "Failed to parse flag icon! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	SDL_FreeSurface(flag_ico);
 
 	GAME_initializeMap();
-
+	gui = new GUI(tank_icon, flag_icon);
 	return success;
 }
 
 bool Game::GAME_Load()
 {
 	bool success = true;
+	SDL_Surface* realBG = SDL_LoadBMP("graphics/realBG.bmp");
+	SDL_Surface* realBGStretched = SDL_ConvertSurface(realBG, buffer_surface->format, NULL);
+	realBGTexture = SDL_CreateTextureFromSurface(main_renderer, realBGStretched);
+	SDL_FreeSurface(realBG);
+	if (realBGTexture == NULL)
+	{
+		cout << "Couldn't load realBG texture! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	realBGRect = new SDL_Rect();
+	realBGRect->w = Constants::WINDOW_WIDTH;
+	realBGRect->h = Constants::WINDOW_HEIGHT;
+	realBGRect->x = 0;
+	realBGRect->y = 0;
 
 	SDL_Surface* temp = SDL_LoadBMP("graphics/splashBG.bmp");
 	SDL_Surface* temp1 = SDL_ConvertSurface(temp, buffer_surface->format, NULL);
@@ -314,9 +394,10 @@ void Game::GAME_Update()
 			}
 			//spawnEnemies();
 
-			//gui->Update(player->getLives(), enemies->size());
+
 			if (player->getLives() <= 0)
 				lost = true;
+			gui->Update(player->getLives(), Constants::TARGET_KILLS);
 		}
 
 
@@ -430,14 +511,15 @@ void Game::GAME_Update()
 void Game::GAME_Draw()
 {
 	SDL_RenderClear(main_renderer);
+
+	SDL_RenderCopy(main_renderer, realBGTexture, NULL, realBGRect);//!!!
 	if (!lost && !won)
+
 	{
 		
 		SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
 
 		GAME_drawLandscape();
-
-
 
 		for (int i = 0; i < projectiles->size(); i++)
 		{
@@ -451,7 +533,11 @@ void Game::GAME_Draw()
 			enemies->at(i)->Draw(main_renderer);
 		}
 
-		//gui->Draw(main_renderer);
+		gui->Draw(main_renderer);
+		
+		if (pause)
+			SDL_RenderCopy(main_renderer, pauseText, NULL, bg_rect);
+
 		SDL_RenderPresent(main_renderer);
 	}
 	else if (won){
@@ -461,7 +547,7 @@ void Game::GAME_Draw()
 	}
 	else
 	{
-		SDL_RenderCopy(main_renderer, gameOverScreen, NULL, bg_rect);
+		SDL_RenderCopy(main_renderer, gameOverScreen, NULL, realBGRect);
 		SDL_RenderPresent(main_renderer);
 	}
 	
