@@ -476,8 +476,8 @@ void Game::checkCollisions()
 		{
 			r1->x = player->getRect()->x + (player->x_speed)*10;
 			r1->y = player->getRect()->y + (player->y_speed)*10;
-			r1->w = 64;
-			r1->h = 64;
+			r1->w = Constants::TILE_WIDTH;
+			r1->h = Constants::TILE_HEIGHT;
 
 			if (SDL_HasIntersection(allTiles.at(i)->rect, r1)){
 				player->setBlocked();
@@ -490,7 +490,9 @@ void Game::checkCollisions()
 	{
 		if (projectiles->at(i)->getOwner() != Constants::Friendly)
 			if (SDL_HasIntersection(projectiles->at(i)->getRect(), player->getRect()))
-				player->respawn();
+			{
+				player->die();
+			}
 	}
 
 	if (enemies->size() > 0)
@@ -504,8 +506,8 @@ void Game::checkCollisions()
 				{
 					r1->x = enemies->at(i)->getRect()->x + (enemies->at(i)->x_speed) * 10;
 					r1->y = enemies->at(i)->getRect()->y + (enemies->at(i)->y_speed) * 10;
-					r1->w = 64;
-					r1->h = 64;
+					r1->w = Constants::TILE_WIDTH;
+					r1->h = Constants::TILE_HEIGHT;
 					if (SDL_HasIntersection(r1, allTiles.at(j)->rect))
 						enemies->at(i)->changeDirection();
 
@@ -530,8 +532,8 @@ void Game::checkCollisions()
 		{
 			r1->x = player->getRect()->x + (player->x_speed) * 10;
 			r1->y = player->getRect()->y + (player->y_speed) * 10;
-			r1->w = 64;
-			r1->h = 64;
+			r1->w = Constants::TILE_WIDTH;
+			r1->h = Constants::TILE_HEIGHT;
 			if (SDL_HasIntersection(enemies->at(i)->getRect(), r1))
 				player->setBlocked();
 		}

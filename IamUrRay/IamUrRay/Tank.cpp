@@ -23,6 +23,8 @@ Tank::~Tank()
 
 void Tank::Update(const Uint8* keyboardState)
 {
+	if (dead)
+		return;
 	//cout << "player Updated" << endl;
 
 	x_speed = 0;
@@ -175,4 +177,14 @@ void Tank::respawn()
 	lives--;
 	x = 0;
 	y = 0;
+	dead = false;
+}
+
+void Tank::die()
+{
+	drawRect->x = -200;
+	drawRect->y = -100;
+	x = -200;
+	y = -100;
+	dead = true;
 }

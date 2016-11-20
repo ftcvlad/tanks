@@ -32,6 +32,8 @@ private:
 	bool cur_direction_collision = false;
 	bool shot = false;
 
+	bool dead = false;
+
 public:
 	float x_speed;
 	float y_speed;
@@ -43,6 +45,9 @@ public:
 	bool collides(SDL_Rect* rectangle);
 	void setBlocked();
 	SDL_Rect* getRect();
+	void die();
 	void respawn();
+
+	bool isDead(){ return dead; }
 };
 #endif
