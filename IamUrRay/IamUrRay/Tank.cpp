@@ -22,6 +22,8 @@ Tank::~Tank()
 
 void Tank::Update(const Uint8* keyboardState)
 {
+	//cout << "player Updated" << endl;
+
 	x_speed = 0;
 	y_speed = 0;
 
@@ -118,6 +120,7 @@ void Tank::initTank()
 	direction = Constants::Down;
 }
 
+
 bool Tank::collides(SDL_Rect* rectangle)
 {
 	SDL_Rect* rect = new SDL_Rect();
@@ -155,8 +158,13 @@ bool Tank::collides(SDL_Rect* rectangle)
 	return collides;
 }
 
+
 void Tank::setBlocked()
 {
 	cur_direction_collision = true;
 }
 
+
+SDL_Rect* Tank::getRect(){
+	return drawRect;
+}

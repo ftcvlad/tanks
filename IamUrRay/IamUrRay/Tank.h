@@ -17,8 +17,7 @@ private:
 
 	float x;
 	float y;
-	float x_speed;
-	float y_speed;
+	
 
 	SDL_Rect* drawRect;
 	SDL_Texture* texture;
@@ -33,6 +32,8 @@ private:
 	bool shot = false;
 
 public:
+	float x_speed;
+	float y_speed;
 	Tank(SDL_Texture* texture, SDL_Texture* projectile_texture, vector<Projectile*>* peojectiles);
 	~Tank();
 	void Update(const Uint8* keyboardState);
@@ -40,5 +41,6 @@ public:
 	void initTank();
 	bool collides(SDL_Rect* rectangle);
 	void setBlocked();
+	SDL_Rect* getRect();
 };
 #endif
