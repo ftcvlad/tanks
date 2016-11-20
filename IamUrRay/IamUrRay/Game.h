@@ -9,6 +9,7 @@
 #include "Projectile.h"
 #include <vector>
 #include "EnemyTank.h"
+#include "GUI.h"
 
 class Game
 {
@@ -40,6 +41,7 @@ private:
 	SDL_Texture* projectileTexture;
 	std::vector<Projectile*>* projectiles;
 
+	GUI* gui;
 	vector<EnemyTank*>* enemies;
 
 	int textMap[26][26];

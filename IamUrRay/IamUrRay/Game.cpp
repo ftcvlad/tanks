@@ -10,6 +10,7 @@ using namespace std;
 
 Game::Game()
 {
+	gui = new GUI();
 	SCREEN_WIDTH = Constants::SCREEN_WIDTH;
 	SCREEN_HEIGHT = Constants::SCREEN_HEIGHT;
 
@@ -61,6 +62,7 @@ Game::~Game()
 		delete enemies->at(i);
 	}
 	delete enemies;
+	delete gui;
 }
 
 bool Game::initPlayer()
@@ -276,6 +278,8 @@ void Game::GAME_Update()
 		if (!intersects)
 			player->respawn();
 	}
+
+	gui->Update(player->getLives(), enemies->size());
 	//cout << "enemies alive: " << enemies->size() << endl;
 }
 
@@ -299,7 +303,8 @@ void Game::GAME_Draw()
 	{
 		enemies->at(i)->Draw(main_renderer);
 	}
-	
+
+	gui->Draw(main_renderer);
 	SDL_RenderPresent(main_renderer);
 	
 	

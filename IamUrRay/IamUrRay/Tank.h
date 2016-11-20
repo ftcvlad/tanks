@@ -49,5 +49,6 @@ public:
 	void respawn();
 
 	bool isDead(){ return dead; }
+	int getLives(){ return lives; }
 };
 #endif
