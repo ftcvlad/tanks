@@ -13,7 +13,11 @@ using namespace std;
 class EnemyTank
 {
 private:
-	SDL_Texture* texture;
+	SDL_Texture* curTexture;
+	SDL_Texture* lowTexture;
+	SDL_Texture* middleTexture;
+	SDL_Texture* highTexture;
+
 	SDL_Rect* drawRect;
 
 	SDL_Texture* projectile_texture;
@@ -26,7 +30,7 @@ private:
 
 	
 
-	
+	int lives;
 
 	float speedLimit = 0.1;
 
@@ -36,7 +40,7 @@ private:
 	void shoot();
 
 public:
-	EnemyTank(SDL_Texture* texture, int x, int y, Constants::Direction direction, SDL_Texture* projectile_texture, vector<Projectile*>* projectiles);
+	EnemyTank(SDL_Texture* lowTexture, SDL_Texture* middleTexture, SDL_Texture* highTexture, int x, int y, Constants::Direction direction, SDL_Texture* projectile_texture, vector<Projectile*>* projectiles, int lives);
 	~EnemyTank();
 
 	void Update();

@@ -9,6 +9,7 @@
 #include "Projectile.h"
 #include <vector>
 #include "EnemyTank.h"
+#include "GUI.h"
 
 class Game
 {
@@ -19,6 +20,13 @@ private:
 
 	SDL_Surface* texture1 = NULL;
 
+	SDL_Texture* highHpTank = NULL;
+	SDL_Texture* middleHpTank = NULL;
+	SDL_Texture* lowHpTank = NULL;
+
+	SDL_Texture* projectileTexture;
+
+	SDL_Texture* gameOverScreen = NULL;
 
 	//SDL_Surface* bg_texture = NULL;
 	SDL_Texture* brickTexture = NULL;
@@ -37,10 +45,15 @@ private:
 
 	Tank* player;
 
-	SDL_Texture* projectileTexture;
+	
 	std::vector<Projectile*>* projectiles;
 
+	GUI* gui;
 	vector<EnemyTank*>* enemies;
+
+	bool lost = false;
+	bool pause = false;
+	bool pausepressed = false;
 
 	int textMap[26][26];
 
@@ -56,6 +69,9 @@ private:
 	bool initPlayer();
 	bool initEnemies();
 	void checkCollisions();
+	void init();
+	void reset();
+	void spawnEnemies();
 public:
 	int SCREEN_WIDTH;
 	int SCREEN_HEIGHT;

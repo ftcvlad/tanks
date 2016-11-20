@@ -73,7 +73,12 @@ void Tank::Update(const Uint8* keyboardState)
 	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
 	{
 		shot = true;
-		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2) - Constants::PROJECTILE_WIDTH / 2, drawRect->y + (drawRect->h / 2) - Constants::PROJECTILE_HEIGHT / 2, Constants::Friendly));
+
+		int proj_width;
+		int proj_height;
+		SDL_QueryTexture(projectile_texture, NULL, NULL, &proj_width, &proj_height);
+		projectiles->push_back(new Projectile(projectile_texture, direction, drawRect->x + (drawRect->w / 2) - proj_width/2, drawRect->y + (drawRect->h / 2)-proj_height/2, Constants::Friendly));
+
 	}
 	else if (!keyboardState[SDL_SCANCODE_SPACE])
 		shot = false;

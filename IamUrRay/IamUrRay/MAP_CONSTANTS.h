@@ -20,6 +20,7 @@ public:
 	static const int PROJECTILE_HEIGHT = 5;
 	static const int PROJECTILE_SPEED = 1;
 
+
 	static const int LIFE_COUNT = 10;
 
 	static const int START_X = 9 * 32;
@@ -36,8 +37,10 @@ public:
 	static const int START_Y_3 = 0;
 
 
-	//static const int START_X = 288;
-	//static const int START_Y = 768;
+	
+
+	static const int LIFE_COUNT = 5;
+
 };
 
 
