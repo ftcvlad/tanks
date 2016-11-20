@@ -25,7 +25,6 @@ void Tank::Update(const Uint8* keyboardState)
 {
 	if (dead)
 		return;
-	//cout << "player Updated" << endl;
 
 	x_speed = 0;
 	y_speed = 0;
@@ -184,7 +183,5 @@ void Tank::die()
 {
 	drawRect->x = -200;
 	drawRect->y = -100;
-	x = -200;
-	y = -100;
 	dead = true;
 }

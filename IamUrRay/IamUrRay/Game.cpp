@@ -258,6 +258,24 @@ void Game::GAME_Update()
 		enemies->at(i)->Update();
 	}
 	removeInactiveObjects();
+
+	if (player->isDead())
+	{
+		//respawn player if dead and spawn unoccupied
+		SDL_Rect* r = new SDL_Rect();
+		r->x = 0;
+		r->y = 0;
+		r->w = Constants::TILE_WIDTH;
+		r->h = Constants::TILE_HEIGHT;
+		bool intersects = false;
+		for (int i = 0; i < enemies->size(); i++)
+		{
+			if (SDL_HasIntersection(enemies->at(i)->getRect(), r))
+				intersects = true;
+		}
+		if (!intersects)
+			player->respawn();
+	}
 	//cout << "enemies alive: " << enemies->size() << endl;
 }
 
