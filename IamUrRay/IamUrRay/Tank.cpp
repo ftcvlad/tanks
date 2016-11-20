@@ -21,6 +21,8 @@ Tank::~Tank()
 
 void Tank::Update(const Uint8* keyboardState)
 {
+	//cout << "player Updated" << endl;
+
 	x_speed = 0;
 	y_speed = 0;
 	if (keyboardState[SDL_SCANCODE_W])
@@ -44,20 +46,22 @@ void Tank::Update(const Uint8* keyboardState)
 		direction = Constants::Right;
 	}
 
-	if (!cur_direction_collision)
-	{
+	if ((this->cur_direction_collision)){
+		//x_speed = 0;
+		//y_speed = 0;
+		//cout << "collides" << endl;
+		cur_direction_collision = false;
+
+		
+	}
+	else{
+		//cout << "not" << endl;
 		x += x_speed;
 		y += y_speed;
 	}
-	else
-	{
-		if (prevDirection == direction)
-		{
-			x_speed = 0;
-			y_speed = 0;
-		}
-	}
-	cur_direction_collision = false;
+
+	
+	
 
 	if (keyboardState[SDL_SCANCODE_SPACE] && !shot)
 	{
@@ -120,37 +124,41 @@ void Tank::initTank()
 	direction = Constants::Down;
 }
 
-bool Tank::collides(SDL_Rect* rectangle)
-{
-	bool collides = true;
-
-	//tank sides
-	int tankLeft = drawRect->x;
-	int tankRight = drawRect->x + drawRect->w;
-	int tankTop = drawRect->y;
-	int tankBottom = drawRect->y + drawRect->h;
-
-	//object sides
-	int objLeft = rectangle->x;
-	int objRight = rectangle->x + rectangle->w;
-	int objTop = rectangle->y;
-	int objBottom = rectangle->y + rectangle->h;
-
-	if (tankBottom+3 < objTop)
-		collides = false;
-	else if (tankTop-3 > objBottom)
-		collides = false;
-	else if (tankLeft-3 > objRight)
-		collides = false;
-	else if (tankRight+3 < objLeft)
-		collides = false;
-
-
-	return collides;
-}
+//bool Tank::collides(SDL_Rect* rectangle)
+//{
+//	bool collides = true;
+//
+//	//tank sides
+//	int tankLeft = drawRect->x;
+//	int tankRight = drawRect->x + drawRect->w;
+//	int tankTop = drawRect->y;
+//	int tankBottom = drawRect->y + drawRect->h;
+//
+//	//object sides
+//	int objLeft = rectangle->x;
+//	int objRight = rectangle->x + rectangle->w;
+//	int objTop = rectangle->y;
+//	int objBottom = rectangle->y + rectangle->h;
+//
+//	if (tankBottom + this->y_speed < objTop)
+//		collides = false;
+//	else if (tankTop - this->y_speed > objBottom)
+//		collides = false;
+//	else if (tankLeft - this->x_speed > objRight)
+//		collides = false;
+//	else if (tankRight + this->x_speed < objLeft)
+//		collides = false;
+//
+//
+//	return collides;
+//}
 
 void Tank::setBlocked()
 {
 	cur_direction_collision = true;
 }
 
+
+SDL_Rect* Tank::getRect(){
+	return drawRect;
+}

@@ -182,9 +182,10 @@ void Game::GAME_Update()
 		projectiles->at(i)->Update();
 	}
 
+	checkCollisions();
 	player->Update(SDL_GetKeyboardState(NULL));
 
-	checkCollisions();
+	
 
 	removeInactiveObjects();
 }
@@ -398,13 +399,28 @@ void Game::GAME_drawLandscape(){
 
 void Game::checkCollisions()
 {
+	//cout << "Collisions checked" << endl;
 	//check tile collisions with the tank
 	for (int i = 0; i < allTiles.size(); i++)
 	{
 		if (!allTiles.at(i)->canIntersect)
 		{
-			if (player->collides(allTiles.at(i)->rect))
+			/*if (player->collides(allTiles.at(i)->rect))
 			{
+				player->setBlocked();
+			}*/
+
+			SDL_Rect* r = new SDL_Rect();
+			r->x = player->getRect()->x + (player->x_speed)*10;
+			r->y = player->getRect()->y + (player->y_speed)*10;
+			r->w = 64;
+			r->h = 64;
+
+			
+
+		
+
+			if (SDL_HasIntersection(allTiles.at(i)->rect, r)){
 				player->setBlocked();
 			}
 		}
