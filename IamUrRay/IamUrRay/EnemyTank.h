@@ -53,6 +53,7 @@ public:
 	void die();
 	bool isActive(){ return active; }
 
+
 	float x;
 	float y;
 };

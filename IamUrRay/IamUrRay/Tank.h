@@ -33,6 +33,7 @@ private:
 	bool shot = false;
 
 	bool dead = false;
+	int kills = 0;
 
 public:
 	float x_speed;
@@ -53,6 +54,8 @@ public:
 
 	void adjustXPosition();
 	void adjustYPosition();
+	void setKills(int newKills){ kills = newKills; }
+	int getKills(){ return kills; }
 
 };
 #endif

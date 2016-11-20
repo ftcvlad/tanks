@@ -21,7 +21,7 @@ public:
 	static const int PROJECTILE_SPEED = 1;
 
 
-	static const int LIFE_COUNT = 10;
+	
 
 	static const int START_X = 9 * 32;
 	static const int START_Y = (26 - 2) * 32;
