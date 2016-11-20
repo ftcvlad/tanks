@@ -566,6 +566,7 @@ void Game::checkCollisions()
 					if (SDL_HasIntersection(projectiles->at(j)->getRect(), enemies->at(i)->getRect()))
 					{
 						enemies->at(i)->die();
+						projectiles->at(j)->setActive(false);
 					}
 				}
 			}
