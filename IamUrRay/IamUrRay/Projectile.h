@@ -27,6 +27,9 @@ public:
 	//accessors and mutators
 	bool getActive(){ return active; }
 	bool setActive(bool new_active){ active = new_active; }
+	Constants::ProjectileOwner getOwner(){ return owner; }
+	SDL_Rect* getRect(){ return drawRect; }
+	
 	
 };
 #endif

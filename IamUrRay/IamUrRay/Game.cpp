@@ -31,7 +31,7 @@ Game::Game()
 	}
 
 
-
+	initEnemies();
 	initPlayer();
 
 
@@ -56,6 +56,11 @@ Game::~Game()
 		delete projectiles->at(i);
 	}
 	delete projectiles;
+	for (int i = 0; i < enemies->size(); i++)
+	{
+		delete enemies->at(i);
+	}
+	delete enemies;
 }
 
 bool Game::initPlayer()
@@ -80,7 +85,7 @@ bool Game::initPlayer()
 		return false;
 	}
 	SDL_Texture* projectile_texture = SDL_CreateTextureFromSurface(main_renderer, projectileSurf);
-	if (player_texture == NULL)
+	if (projectile_texture == NULL)
 	{
 		cout << "Failed to convert projectile surface into texture! Error: " << IMG_GetError() << endl;
 		return false;
@@ -89,6 +94,70 @@ bool Game::initPlayer()
 	player = new Tank(player_texture, projectile_texture, projectiles);
 
 	SDL_FreeSurface(temp_surface);
+	return true;
+}
+
+bool Game::initEnemies()
+{
+	enemies = new vector<EnemyTank*>();
+	SDL_Surface* temp_surface = IMG_Load("graphics/enemyTank1.png");
+	if (temp_surface == NULL)
+	{
+		cout << "Couldn't load enemy texture! Error: " << SDL_GetError() << endl;
+		return false;
+	}
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(main_renderer, temp_surface);
+	SDL_FreeSurface(temp_surface);
+	if (texture == NULL)
+	{
+		cout << "Couldn't parse enemy texture! Error: " << SDL_GetError() << endl;
+	}
+
+	SDL_Surface* temp_surface1 = IMG_Load("graphics/enemyTank1.png");
+	if (temp_surface1 == NULL)
+	{
+		cout << "Couldn't load enemy texture! Error: " << SDL_GetError() << endl;
+		return false;
+	}
+	SDL_Texture* texture1 = SDL_CreateTextureFromSurface(main_renderer, temp_surface1);
+	SDL_FreeSurface(temp_surface1);
+	if (texture1 == NULL)
+	{
+		cout << "Couldn't parse enemy texture! Error: " << SDL_GetError() << endl;
+	}
+
+	SDL_Surface* temp_surface2 = IMG_Load("graphics/enemyTank1.png");
+	if (temp_surface2 == NULL)
+	{
+		cout << "Couldn't load enemy texture! Error: " << SDL_GetError() << endl;
+		return false;
+	}
+	SDL_Texture* texture2 = SDL_CreateTextureFromSurface(main_renderer, temp_surface2);
+	SDL_FreeSurface(temp_surface2);
+	if (texture2 == NULL)
+	{
+		cout << "Couldn't parse enemy texture! Error: " << SDL_GetError() << endl;
+	}
+
+	SDL_Surface* projectileSurf = IMG_Load("graphics/projectile.png");
+	if (temp_surface == NULL)
+	{
+		cout << "Failed to load projectile surface! Error: " << IMG_GetError() << endl;
+		return false;
+	}
+	SDL_Texture* projectile_texture = SDL_CreateTextureFromSurface(main_renderer, projectileSurf);
+	SDL_FreeSurface(projectileSurf);
+	if (projectile_texture == NULL)
+	{
+		cout << "Failed to convert projectile surface into texture! Error: " << IMG_GetError() << endl;
+		return false;
+	}
+
+	enemies->push_back(new EnemyTank(texture, 340, 430, Constants::Down, projectile_texture, projectiles));
+	enemies->push_back(new EnemyTank(texture2, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, Constants::SCREEN_HEIGHT - Constants::TILE_HEIGHT, Constants::Down, projectile_texture, projectiles));
+	enemies->push_back(new EnemyTank(texture1, Constants::SCREEN_WIDTH - Constants::TILE_WIDTH, 10, Constants::Down, projectile_texture, projectiles));
+
+
 	return true;
 }
 
@@ -184,8 +253,12 @@ void Game::GAME_Update()
 
 	checkCollisions();
 	player->Update(SDL_GetKeyboardState(NULL));
-
+	for (int i = 0; i < enemies->size(); i++)
+	{
+		enemies->at(i)->Update();
+	}
 	removeInactiveObjects();
+	//cout << "enemies alive: " << enemies->size() << endl;
 }
 
 void Game::GAME_Draw()
@@ -201,12 +274,13 @@ void Game::GAME_Draw()
 	{
 		if (projectiles->at(i)->getActive())
 			projectiles->at(i)->Draw(main_renderer);
-		else
-			cout << "Not active!" << endl;
 	}
 
 	player->Draw(main_renderer);
-
+	for (int i = 0; i < enemies->size(); i++)
+	{
+		enemies->at(i)->Draw(main_renderer);
+	}
 	
 	SDL_RenderPresent(main_renderer);
 	
@@ -325,7 +399,6 @@ bool Game::GAME_initializeMap(){
 
 	}
 
-
 	
 	ifstream file("map1.txt");
 	std::string str;
@@ -353,9 +426,6 @@ bool Game::GAME_initializeMap(){
 		row++;
 		
 	}
-
-
-
 }
 
 
@@ -397,37 +467,123 @@ void Game::GAME_drawLandscape(){
 
 void Game::checkCollisions()
 {
-	//cout << "Collisions checked" << endl;
-	//check tile collisions with the tank
+	SDL_Rect* r1 = new SDL_Rect();
+	SDL_Rect* r2 = new SDL_Rect();
+	//check player and tile collisions
 	for (int i = 0; i < allTiles.size(); i++)
 	{
 		if (!allTiles.at(i)->canIntersect)
 		{
-			/*if (player->collides(allTiles.at(i)->rect))
-			{
-				player->setBlocked();
-			}*/
+			r1->x = player->getRect()->x + (player->x_speed)*10;
+			r1->y = player->getRect()->y + (player->y_speed)*10;
+			r1->w = 64;
+			r1->h = 64;
 
-			SDL_Rect* r = new SDL_Rect();
-			r->x = player->getRect()->x + (player->x_speed)*10;
-			r->y = player->getRect()->y + (player->y_speed)*10;
-			r->w = 64;
-			r->h = 64;
-
-			
-
-		
-
-			if (SDL_HasIntersection(allTiles.at(i)->rect, r)){
+			if (SDL_HasIntersection(allTiles.at(i)->rect, r1)){
 				player->setBlocked();
 			}
 		}
 	}
+
+	//check for player and projectile collisions
+	for (int i = 0; i < projectiles->size(); i++)
+	{
+		if (projectiles->at(i)->getOwner() != Constants::Friendly)
+			if (SDL_HasIntersection(projectiles->at(i)->getRect(), player->getRect()))
+				player->respawn();
+	}
+
+	if (enemies->size() > 0)
+	{
+		//check enemy collision with tiles
+		for (int i = 0; i < enemies->size(); i++)
+		{
+			for (int j = 0; j < allTiles.size(); j++)
+			{
+				if (!allTiles.at(j)->canIntersect)
+				{
+					r1->x = enemies->at(i)->getRect()->x + (enemies->at(i)->x_speed) * 10;
+					r1->y = enemies->at(i)->getRect()->y + (enemies->at(i)->y_speed) * 10;
+					r1->w = 64;
+					r1->h = 64;
+					if (SDL_HasIntersection(r1, allTiles.at(j)->rect))
+						enemies->at(i)->changeDirection();
+
+				}
+
+			}
+		}
+
+		//check enemy and player collision
+		for (int i = 0; i < enemies->size(); i++)
+		{
+			r1->x = enemies->at(i)->getRect()->x + (enemies->at(i)->x_speed) * 10;
+			r1->y = enemies->at(i)->getRect()->y + (enemies->at(i)->y_speed) * 10;
+			r1->w = 64;
+			r1->h = 64;
+			if (SDL_HasIntersection(r1, player->getRect()))
+				enemies->at(i)->changeDirection();
+		}
+
+		//check player and enemy collision
+		for (int i = 0; i < enemies->size(); i++)
+		{
+			r1->x = player->getRect()->x + (player->x_speed) * 10;
+			r1->y = player->getRect()->y + (player->y_speed) * 10;
+			r1->w = 64;
+			r1->h = 64;
+			if (SDL_HasIntersection(enemies->at(i)->getRect(), r1))
+				player->setBlocked();
+		}
+
+		//check for enemy and projectile collisions
+		for (int i = 0; i < enemies->size(); i++)
+		{
+			for (int j = 0; j < projectiles->size(); j++)
+			{
+				if (projectiles->at(j)->getOwner() != Constants::Enemy)
+				{
+					if (SDL_HasIntersection(projectiles->at(j)->getRect(), enemies->at(i)->getRect()))
+					{
+						enemies->at(i)->die();
+					}
+				}
+			}
+		}
+
+		//check for collision between enemies
+		for (int i = 0; i < enemies->size() - 1; i++)
+		{
+			for (int j = 0; j < enemies->size(); j++)
+			{
+				if (i == j)
+					j++;
+				r1->x = enemies->at(i)->getRect()->x + (enemies->at(i)->x_speed) * 10;
+				r1->y = enemies->at(i)->getRect()->y + (enemies->at(i)->y_speed) * 10;
+				r1->w = Constants::TILE_WIDTH;
+				r1->h = Constants::TILE_HEIGHT;
+
+				r2->x = enemies->at(j)->getRect()->x + (enemies->at(j)->x_speed) * 10;
+				r2->y = enemies->at(j)->getRect()->y + (enemies->at(j)->y_speed) * 10;
+				r2->w = Constants::TILE_WIDTH;
+				r2->h = Constants::TILE_HEIGHT;
+
+				if (SDL_HasIntersection(r1, r2))
+				{
+					enemies->at(i)->changeDirection();
+					enemies->at(j)->changeDirection();
+				}
+			}
+		}
+	}
+	delete r1;
+	delete r2;
 }
 
 
 void Game::removeInactiveObjects()
 {
+	//remove inactive projectiles
 	int counter = 0;
 	for (int i = 0; i < projectiles->size(); i++)
 	{
@@ -436,10 +592,21 @@ void Game::removeInactiveObjects()
 			Projectile* temp = projectiles->at(counter);
 			projectiles->erase(projectiles->begin() + counter);
 			delete temp;
-			counter++;
 		}
-
+		counter++;
 	}
 	
+	//remove inactive enemies
+	counter = 0;
+	for (int i = 0; i < enemies->size(); i++)
+	{
+		if (!enemies->at(counter)->isActive())
+		{
+			EnemyTank* temp = enemies->at(counter);
+			enemies->erase(enemies->begin() + counter);
+			delete temp;
+		}
+		counter++;
+	}
 
 }

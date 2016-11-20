@@ -18,6 +18,7 @@ private:
 	float x;
 	float y;
 	
+	int lives;
 
 	SDL_Rect* drawRect;
 	SDL_Texture* texture;
@@ -42,5 +43,6 @@ public:
 	bool collides(SDL_Rect* rectangle);
 	void setBlocked();
 	SDL_Rect* getRect();
+	void respawn();
 };
 #endif

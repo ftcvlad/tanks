@@ -8,6 +8,7 @@
 #include "Tank.h"
 #include "Projectile.h"
 #include <vector>
+#include "EnemyTank.h"
 
 class Game
 {
@@ -39,6 +40,8 @@ private:
 	SDL_Texture* projectileTexture;
 	std::vector<Projectile*>* projectiles;
 
+	vector<EnemyTank*>* enemies;
+
 	int textMap[26][26];
 
 	bool gameOver;
@@ -51,7 +54,7 @@ private:
 	void GAME_drawLandscape();
 
 	bool initPlayer();
-
+	bool initEnemies();
 	void checkCollisions();
 public:
 	int SCREEN_WIDTH;

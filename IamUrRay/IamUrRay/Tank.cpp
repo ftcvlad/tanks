@@ -10,6 +10,7 @@ Tank::Tank(SDL_Texture* texture, SDL_Texture* projectile_texture, vector<Project
 	this->projectiles = projectiles;
 	collisionDirection = Constants::None;
 	initTank();
+	lives = Constants::LIFE_COUNT;
 }
 
 
@@ -167,4 +168,11 @@ void Tank::setBlocked()
 
 SDL_Rect* Tank::getRect(){
 	return drawRect;
+}
+
+void Tank::respawn()
+{
+	lives--;
+	x = 0;
+	y = 0;
 }
