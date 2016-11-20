@@ -19,6 +19,8 @@ private:
 	SDL_Surface* buffer_surface = NULL;
 
 	SDL_Surface* texture1 = NULL;
+	SDL_Texture* realBGTexture = NULL;
+	SDL_Rect* realBGRect = NULL;
 
 	SDL_Texture* highHpTank = NULL;
 	SDL_Texture* middleHpTank = NULL;
@@ -36,6 +38,10 @@ private:
 	SDL_Texture* base_2_Texture = NULL;
 	SDL_Texture* base_3_Texture = NULL;
 	SDL_Texture* base_4_Texture = NULL;
+
+	SDL_Texture* pauseText = NULL;
+	SDL_Texture* tank_icon = NULL; 
+	SDL_Texture* flag_icon = NULL;
 
 	std::vector<Tile2*> allTiles;
 
