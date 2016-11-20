@@ -6,6 +6,7 @@
 #include <string>
 
 
+
 using namespace std;
 
 Game::Game()
@@ -53,35 +54,43 @@ void Game::init()
 void Game::reset()
 {
 	SDL_FreeSurface(texture1);
-	texture1 = NULL;
 	SDL_DestroyTexture(bg_texture);
-	bg_texture = NULL;
 	SDL_DestroyTexture(highHpTank);
-	highHpTank = NULL;
 	SDL_DestroyTexture(middleHpTank);
-	middleHpTank = NULL;
 	SDL_DestroyTexture(lowHpTank);
-	lowHpTank = NULL;
 	SDL_DestroyTexture(projectileTexture);
-	projectileTexture = NULL;
 	SDL_DestroyTexture(gameOverScreen);
-	gameOverScreen = NULL;
 	SDL_DestroyTexture(brickTexture);
-	brickTexture = NULL; 
 	SDL_DestroyTexture(grassTexture);
-	grassTexture = NULL; 
 	SDL_DestroyTexture(wallTexture);
-	wallTexture = NULL;
 	SDL_DestroyTexture(base_1_Texture);
-	base_1_Texture = NULL;
 	SDL_DestroyTexture(base_2_Texture);
-	base_2_Texture = NULL; 
 	SDL_DestroyTexture(base_3_Texture);
-	base_3_Texture = NULL;
 	SDL_DestroyTexture(base_4_Texture);
-	base_4_Texture = NULL;
 	SDL_DestroyTexture(pauseText);
+	SDL_DestroyTexture(realBGTexture);
+	SDL_DestroyTexture(tank_icon);
+	SDL_DestroyTexture(flag_icon);
+
+	texture1 = NULL;
+	bg_texture = NULL;
+	highHpTank = NULL;
+	middleHpTank = NULL;
+	lowHpTank = NULL;
+	projectileTexture = NULL;
+	gameOverScreen = NULL;
+	brickTexture = NULL;
+	grassTexture = NULL;
+	wallTexture = NULL;
+	base_1_Texture = NULL;
+	base_2_Texture = NULL;
+	base_3_Texture = NULL;
+	base_4_Texture = NULL;
 	pauseText = NULL;
+	realBGTexture = NULL;
+	tank_icon = NULL;
+	flag_icon = NULL;
+
 
 	SDL_FreeSurface(buffer_surface);
 	buffer_surface = NULL;
@@ -90,19 +99,27 @@ void Game::reset()
 
 	delete bg_rect;
 	delete player;
-	
+	delete realBGRect;
 
 	for (int i = 0; i < projectiles->size(); i++)
 	{
 		delete projectiles->at(i);
 	}
 	delete projectiles;
+
 	for (int i = 0; i < enemies->size(); i++)
 	{
 		delete enemies->at(i);
 	}
 	delete enemies;
 
+	for (int i = 0; i < allTiles.size(); i++)
+	{
+		Tile2* temp = allTiles.at(i);
+		allTiles.erase(allTiles.begin() + i);
+		delete temp;
+	}
+	delete gui;
 }
 
 bool Game::initPlayer()
@@ -126,14 +143,14 @@ bool Game::initPlayer()
 		cout << "Failed to load projectile surface! Error: " << IMG_GetError() << endl;
 		return false;
 	}
-	SDL_Texture* projectile_texture = SDL_CreateTextureFromSurface(main_renderer, projectileSurf);
-	if (projectile_texture == NULL)
+	SDL_Texture* projectileTexture = SDL_CreateTextureFromSurface(main_renderer, projectileSurf);
+	if (projectileTexture == NULL)
 	{
 		cout << "Failed to convert projectile surface into texture! Error: " << IMG_GetError() << endl;
 		return false;
 	}
 
-	player = new Tank(player_texture, projectile_texture, projectiles);
+	player = new Tank(player_texture, projectileTexture, projectiles);
 
 	SDL_FreeSurface(temp_surface);
 	return true;
@@ -188,18 +205,18 @@ bool Game::initEnemies()
 		cout << "Failed to load projectile surface! Error: " << IMG_GetError() << endl;
 		return false;
 	}
-	projectile_texture = SDL_CreateTextureFromSurface(main_renderer, projectileSurf);
+	projectileTexture = SDL_CreateTextureFromSurface(main_renderer, projectileSurf);
 	SDL_FreeSurface(projectileSurf);
-	if (projectile_texture == NULL)
+	if (projectileTexture == NULL)
 	{
 		cout << "Failed to convert projectile surface into texture! Error: " << IMG_GetError() << endl;
 		return false;
 	}
 
 
-	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::START_X_1, Constants::START_Y_1, Constants::Down, projectile_texture, projectiles, 2));
-	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::START_X_2, Constants::START_Y_2, Constants::Down, projectile_texture, projectiles, 3));
-	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::START_X_3, Constants::START_Y_3, Constants::Down, projectile_texture, projectiles, 1));
+	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::START_X_1, Constants::START_Y_1, Constants::Down, projectileTexture, projectiles, 2));
+	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::START_X_2, Constants::START_Y_2, Constants::Down, projectileTexture, projectiles, 3));
+	enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, Constants::START_X_3, Constants::START_Y_3, Constants::Down, projectileTexture, projectiles, 1));
 
 
 
@@ -299,8 +316,26 @@ bool Game::GAME_Init()
 	}
 	SDL_FreeSurface(flag_ico);
 
+
+	SDL_Surface*  temp5 = IMG_Load("graphics/victory.png");
+	if (temp5 == NULL)
+	{
+		cout << "Couldn't load victory text! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	winScreen = SDL_CreateTextureFromSurface(main_renderer, temp5);
+	if (winScreen == NULL)
+	{
+		cout << "Couldn't convert winScreen text! Error: " << SDL_GetError() << endl;
+		success = false;
+	}
+	SDL_FreeSurface(temp5);
+
+
+
 	GAME_initializeMap();
 	gui = new GUI(tank_icon, flag_icon);
+	//SDL_Delay(5000);
 	return success;
 }
 
@@ -353,6 +388,15 @@ void Game::GAME_Update()
 	{
 		if (event.type == SDL_QUIT)
 			gameOver = true;
+
+	}
+
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+	if (state[SDL_SCANCODE_F]){
+		SDL_SetWindowFullscreen(main_window,SDL_WINDOW_FULLSCREEN);
+	}
+	else if (state[SDL_SCANCODE_P]){
+		SDL_SetWindowFullscreen(main_window, 0);
 	}
 
 
@@ -397,7 +441,7 @@ void Game::GAME_Update()
 
 			if (player->getLives() <= 0)
 				lost = true;
-			gui->Update(player->getLives(), Constants::TARGET_KILLS);
+			gui->Update(player->getLives(), Constants::TARGET_KILLS-player->getKills());
 		}
 
 
@@ -423,14 +467,14 @@ void Game::GAME_Update()
 		}
 
 		//WIN
-		if (player->getKills() == 10){///targetKills
+		if (player->getKills() == Constants::TARGET_KILLS){///targetKills
 
 			won = true;
 
-			cout << "victory" << endl;
+		
 		}
 		//ADD NEW ENEMY
-		else if (enemies->size() < 3 && player->getKills()<10){//targetKills-3
+		else if (enemies->size() < 4 && player->getKills()<= Constants::TARGET_KILLS-4){//targetKills-3
 			int randInd = rand() % (3);
 
 			SDL_Rect r;
@@ -464,7 +508,7 @@ void Game::GAME_Update()
 			}
 
 			if (!intersects){
-				enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, r.x, r.y, Constants::Down, projectile_texture, projectiles, rand() % (3) + 1));
+				enemies->push_back(new EnemyTank(lowHpTank, middleHpTank, highHpTank, r.x, r.y, Constants::Down, projectileTexture, projectiles, rand() % (3) + 1));
 			}
 
 		}
@@ -518,20 +562,22 @@ void Game::GAME_Draw()
 	{
 		
 		SDL_RenderCopy(main_renderer, bg_texture, NULL, bg_rect);
-
-		GAME_drawLandscape();
-
 		for (int i = 0; i < projectiles->size(); i++)
 		{
 			if (projectiles->at(i)->getActive())
 				projectiles->at(i)->Draw(main_renderer);
 		}
 
-		player->Draw(main_renderer);
 		for (int i = 0; i < enemies->size(); i++)
 		{
 			enemies->at(i)->Draw(main_renderer);
 		}
+
+		player->Draw(main_renderer);
+		GAME_drawLandscape();
+
+		
+		
 
 		gui->Draw(main_renderer);
 		
@@ -542,7 +588,7 @@ void Game::GAME_Draw()
 	}
 	else if (won){
 		
-		SDL_RenderCopy(main_renderer, winScreen, NULL, bg_rect);
+		SDL_RenderCopy(main_renderer, winScreen, NULL, realBGRect);
 		SDL_RenderPresent(main_renderer);
 	}
 	else

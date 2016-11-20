@@ -51,7 +51,7 @@ private:
 	SDL_Rect* bg_rect;
 
 	Tank* player;
-
+	
 	
 	std::vector<Projectile*>* projectiles;
 

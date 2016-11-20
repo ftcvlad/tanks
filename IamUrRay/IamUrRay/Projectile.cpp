@@ -45,7 +45,7 @@ void Projectile::Update()
 {
 	updateEvetyNthTime--;
 	if (updateEvetyNthTime == 0){
-		updateEvetyNthTime = 5;
+		updateEvetyNthTime = 2;
 		drawRect->x += speedx;
 		drawRect->y += speedy;
 	}

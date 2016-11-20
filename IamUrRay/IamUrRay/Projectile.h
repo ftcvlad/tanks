@@ -30,7 +30,7 @@ public:
 	Constants::ProjectileOwner getOwner(){ return owner; }
 	SDL_Rect* getRect(){ return drawRect; }
 	
-	int updateEvetyNthTime = 5;
+	int updateEvetyNthTime = 2;
 };
 #endif
 

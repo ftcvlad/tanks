@@ -27,7 +27,7 @@ private:
 	vector<Projectile*>* projectiles;
 
 	//constants
-	float speedMax = 0.1;
+	float speedMax = 0.2;
 
 	bool cur_direction_collision = false;
 	bool shot = false;

@@ -37,7 +37,7 @@ void GUI::Draw(SDL_Renderer* renderer)
 	int row = 0;
 	
 	
-	while (counter <= enemiesRemaining)
+	while (counter < enemiesRemaining)
 	{
 		if (column == 3)
 		{

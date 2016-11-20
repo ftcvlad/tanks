@@ -7,7 +7,7 @@ public:
 	enum ProjectileOwner{ Friendly = 0, Enemy = 1 };
 
 	static const int WINDOW_WIDTH = 1024;
-	static const int WINDOW_HEIGHT = 850;
+	static const int WINDOW_HEIGHT = 832;
 
 	static const int SCREEN_WIDTH = 832;
 	static const int SCREEN_HEIGHT = 832;
@@ -44,7 +44,7 @@ public:
 	static const int LIFE_COUNT = 5;
 
 
-	static const int TARGET_KILLS = 20;
+	static const int TARGET_KILLS = 5;
 
 	static const int TANK_ICON_WIDTH = 40;
 	static const int TANK_ICON_HEIGHT = 40;
